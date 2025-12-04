@@ -77,3 +77,10 @@ function BCDM:SetupSlashCommands()
     end
     BCDM:Print("'|cFF8080FF/bcdm|r' for in-game configuration.")
 end
+
+function BCDM:ResolveMedia()
+    local LSM = BCDM.LSM
+    local GeneralDB = BCDM.db.global.General
+    BCDM.Media = BCDM.Media or {}
+    BCDM.Media.Font = LSM:Fetch("font", GeneralDB.Font) or STANDARD_TEXT_FONT
+end

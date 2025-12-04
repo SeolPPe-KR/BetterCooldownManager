@@ -12,5 +12,6 @@ end
 
 function AddOn:OnEnable()
     BCDM:SetupSlashCommands()
+    BCDM:ResolveMedia()
     BCDM:SetupCooldownManager()
 end

@@ -61,19 +61,21 @@ local function AdjustChargeCount(cooldownViewer)
     for _, child in ipairs({ _G[cooldownViewer]:GetChildren() }) do
         if child and child.ChargeCount and child.ChargeCount.Current then
             local current = child.ChargeCount.Current
-            current:SetFont(STANDARD_TEXT_FONT, CooldownViewerDB.Count.FontSize, GeneralDB.FontFlag)
+            current:SetFont(BCDM.Media.Font, CooldownViewerDB.Count.FontSize, GeneralDB.FontFlag)
             current:ClearAllPoints()
             current:SetPoint(CooldownViewerDB.Count.Anchors[1], child, CooldownViewerDB.Count.Anchors[2], CooldownViewerDB.Count.Anchors[3], CooldownViewerDB.Count.Anchors[4])
             current:SetTextColor(CooldownViewerDB.Count.Colour[1], CooldownViewerDB.Count.Colour[2], CooldownViewerDB.Count.Colour[3], 1)
+            current:SetShadowColor(0, 0, 0, 0)
         end
     end
     for _, child in ipairs({ _G[cooldownViewer]:GetChildren() }) do
         if child and child.Applications then
             local max = child.Applications.Applications
-            max:SetFont(STANDARD_TEXT_FONT, CooldownViewerDB.Count.FontSize, GeneralDB.FontFlag)
+            max:SetFont(BCDM.Media.Font, CooldownViewerDB.Count.FontSize, GeneralDB.FontFlag)
             max:ClearAllPoints()
             max:SetPoint(CooldownViewerDB.Count.Anchors[1], child, CooldownViewerDB.Count.Anchors[2], CooldownViewerDB.Count.Anchors[3], CooldownViewerDB.Count.Anchors[4])
             max:SetTextColor(CooldownViewerDB.Count.Colour[1], CooldownViewerDB.Count.Colour[2], CooldownViewerDB.Count.Colour[3], 1)
+            max:SetShadowColor(0, 0, 0, 0)
         end
     end
 end
@@ -87,8 +89,21 @@ local function SizeAllIcons()
     end
 end
 
+local function UpdateIconZoom()
+    local CooldownManagerDB = BCDM.db.global
+    local GeneralDB = CooldownManagerDB.General
+    for _, cooldownViewer in ipairs(CooldownManagerViewers) do
+        for _, viewerChild in ipairs({_G[cooldownViewer]:GetChildren()}) do
+            if viewerChild and viewerChild.Icon then
+                viewerChild.Icon:SetTexCoord((GeneralDB.IconZoom) * 0.5, 1 - (GeneralDB.IconZoom) * 0.5, (GeneralDB.IconZoom) * 0.5, 1 - (GeneralDB.IconZoom) * 0.5)
+            end
+        end
+    end
+end
+
 local function SkinCooldownManager()
     local CooldownManagerDB = BCDM.db.global
+    local GeneralDB = CooldownManagerDB.General
     local EssentialDB = CooldownManagerDB.Essential
     local UtilityDB = CooldownManagerDB.Utility
     local BuffsDB = CooldownManagerDB.Buffs
@@ -102,7 +117,7 @@ local function SkinCooldownManager()
                 -- Skin Icon, Strip Textures
                 if viewerChild.Icon then
                     StripTextures(viewerChild.Icon)
-                    viewerChild.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+                    viewerChild.Icon:SetTexCoord((GeneralDB.IconZoom) * 0.5, 1 - (GeneralDB.IconZoom) * 0.5, (GeneralDB.IconZoom) * 0.5, 1 - (GeneralDB.IconZoom) * 0.5)
                     viewerChild.isSkinned = true
                 end
                 -- Skin Cooldown
@@ -187,10 +202,11 @@ local function ApplyCooldownText(cooldownViewer)
         if icon and icon.Cooldown then
             local textRegion = FetchCooldownTextRegion(icon.Cooldown)
             if textRegion then
-                textRegion:SetFont(STANDARD_TEXT_FONT, CooldownTextDB.FontSize, GeneralDB.FontFlag)
+                textRegion:SetFont(BCDM.Media.Font, CooldownTextDB.FontSize, GeneralDB.FontFlag)
                 textRegion:SetTextColor(CooldownTextDB.Colour[1], CooldownTextDB.Colour[2], CooldownTextDB.Colour[3], 1)
                 textRegion:ClearAllPoints()
                 textRegion:SetPoint(CooldownTextDB.Anchors[1], icon, CooldownTextDB.Anchors[2], CooldownTextDB.Anchors[3], CooldownTextDB.Anchors[4])
+                textRegion:SetShadowColor(0, 0, 0, 0)
             end
         end
     end
@@ -207,8 +223,11 @@ function BCDM:SetupCooldownManager()
 end
 
 function BCDM:UpdateCooldownViewer(cooldownViewer)
+    BCDM:ResolveMedia()
+    UpdateIconZoom()
     SizeIconsInCooldownViewer(cooldownViewer, BCDM.db.global[CooldownViewerToDB[cooldownViewer]].IconSize)
     AdjustChargeCount(cooldownViewer)
+    ApplyCooldownText(cooldownViewer)
     if _G[cooldownViewer] and _G[cooldownViewer].Layout then
         _G[cooldownViewer]:Layout()
     end

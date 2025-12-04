@@ -2,6 +2,7 @@ local _, BCDM = ...
 local AG = LibStub("AceGUI-3.0")
 local OpenedGUI = false
 local GUIFrame = nil
+local LSM = BCDM.LSM
 
 local Anchors = {
     {
@@ -29,13 +30,113 @@ local function CreateInfoTag(Description)
     return InfoDesc
 end
 
-local function ResolveFrame(anchorName)
-    if anchorName == "UIParent" then
-        return UIParent
-    end
-    return _G[anchorName]
-end
+local function DrawGeneralSettings(parentContainer)
+    local CooldownManagerDB = BCDM.db.global
+    local GeneralDB = CooldownManagerDB.General
 
+    local ScrollFrame = AG:Create("ScrollFrame")
+    ScrollFrame:SetLayout("Flow")
+    ScrollFrame:SetFullWidth(true)
+    ScrollFrame:SetFullHeight(true)
+    parentContainer:AddChild(ScrollFrame)
+
+    local OpenEditModeButton = AG:Create("Button")
+    OpenEditModeButton:SetText("Toggle Edit Mode")
+    OpenEditModeButton:SetRelativeWidth(0.5)
+    OpenEditModeButton:SetCallback("OnClick", function() if EditModeManagerFrame:IsShown() then EditModeManagerFrame:Hide() else EditModeManagerFrame:Show() end end)
+    ScrollFrame:AddChild(OpenEditModeButton)
+
+    local OpenCDMSettingsButton = AG:Create("Button")
+    OpenCDMSettingsButton:SetText("Advanced Settings")
+    OpenCDMSettingsButton:SetRelativeWidth(0.5)
+    OpenCDMSettingsButton:SetCallback("OnClick", function() if CooldownViewerSettings:IsShown() then CooldownViewerSettings:Hide() else CooldownViewerSettings:Show() end end)
+    ScrollFrame:AddChild(OpenCDMSettingsButton)
+
+    local CooldownManagerFontDropdown = AG:Create("LSM30_Font")
+    CooldownManagerFontDropdown:SetLabel("Font")
+    CooldownManagerFontDropdown:SetList(LSM:HashTable("font"))
+    CooldownManagerFontDropdown:SetValue(GeneralDB.Font)
+    CooldownManagerFontDropdown:SetCallback("OnValueChanged", function(widget, _, value) widget:SetValue(value) GeneralDB.Font = value BCDM:RefreshAllViewers() end)
+    CooldownManagerFontDropdown:SetRelativeWidth(0.33)
+    ScrollFrame:AddChild(CooldownManagerFontDropdown)
+
+    local CooldownManagerFontFlagDropdown = AG:Create("Dropdown")
+    CooldownManagerFontFlagDropdown:SetLabel("Font Flag")
+    CooldownManagerFontFlagDropdown:SetList({
+        ["NONE"] = "None",
+        ["OUTLINE"] = "Outline",
+        ["THICKOUTLINE"] = "Thick Outline",
+        ["MONOCHROME"] = "Monochrome",
+    })
+    CooldownManagerFontFlagDropdown:SetValue(GeneralDB.FontFlag)
+    CooldownManagerFontFlagDropdown:SetCallback("OnValueChanged", function(_, _, value) GeneralDB.FontFlag = value BCDM:RefreshAllViewers() end)
+    CooldownManagerFontFlagDropdown:SetRelativeWidth(0.33)
+    ScrollFrame:AddChild(CooldownManagerFontFlagDropdown)
+
+    local CooldownManagerIconZoomSlider = AG:Create("Slider")
+    CooldownManagerIconZoomSlider:SetLabel("Icon Zoom")
+    CooldownManagerIconZoomSlider:SetValue(GeneralDB.IconZoom)
+    CooldownManagerIconZoomSlider:SetSliderValues(0, 1, 0.01)
+    CooldownManagerIconZoomSlider:SetIsPercent(true)
+    CooldownManagerIconZoomSlider:SetCallback("OnMouseUp", function(_, _, value) GeneralDB.IconZoom = value BCDM:RefreshAllViewers() end)
+    CooldownManagerIconZoomSlider:SetRelativeWidth(0.33)
+    ScrollFrame:AddChild(CooldownManagerIconZoomSlider)
+
+    local CooldownTextContainer = AG:Create("InlineGroup")
+    CooldownTextContainer:SetTitle("Cooldown Text Settings")
+    CooldownTextContainer:SetFullWidth(true)
+    CooldownTextContainer:SetLayout("Flow")
+    ScrollFrame:AddChild(CooldownTextContainer)
+
+    local CooldownText_AnchorFrom = AG:Create("Dropdown")
+    CooldownText_AnchorFrom:SetLabel("Anchor From")
+    CooldownText_AnchorFrom:SetList(Anchors[1], Anchors[2])
+    CooldownText_AnchorFrom:SetValue(GeneralDB.CooldownText.Anchors[1])
+    CooldownText_AnchorFrom:SetRelativeWidth(0.33)
+    CooldownText_AnchorFrom:SetCallback("OnValueChanged", function(_, _, value) GeneralDB.CooldownText.Anchors[1] = value BCDM:RefreshAllViewers() end)
+    CooldownTextContainer:AddChild(CooldownText_AnchorFrom)
+
+    local CooldownText_AnchorTo = AG:Create("Dropdown")
+    CooldownText_AnchorTo:SetLabel("Anchor To")
+    CooldownText_AnchorTo:SetList(Anchors[1], Anchors[2])
+    CooldownText_AnchorTo:SetValue(GeneralDB.CooldownText.Anchors[2])
+    CooldownText_AnchorTo:SetRelativeWidth(0.33)
+    CooldownText_AnchorTo:SetCallback("OnValueChanged", function(_, _, value) GeneralDB.CooldownText.Anchors[2] = value BCDM:RefreshAllViewers() end)
+    CooldownTextContainer:AddChild(CooldownText_AnchorTo)
+
+    local CooldownText_Colour = AG:Create("ColorPicker")
+    CooldownText_Colour:SetLabel("Font Colour")
+    CooldownText_Colour:SetColor(unpack(GeneralDB.CooldownText.Colour))
+    CooldownText_Colour:SetRelativeWidth(0.33)
+    CooldownText_Colour:SetCallback("OnValueChanged", function(_, _, r, g, b) GeneralDB.CooldownText.Colour = {r, g, b} BCDM:RefreshAllViewers() end)
+    CooldownTextContainer:AddChild(CooldownText_Colour)
+
+    local CooldownText_OffsetX = AG:Create("Slider")
+    CooldownText_OffsetX:SetLabel("Offset X")
+    CooldownText_OffsetX:SetValue(GeneralDB.CooldownText.Anchors[3])
+    CooldownText_OffsetX:SetSliderValues(-200, 200, 1)
+    CooldownText_OffsetX:SetRelativeWidth(0.33)
+    CooldownText_OffsetX:SetCallback("OnValueChanged", function(_, _, value) GeneralDB.CooldownText.Anchors[3] = value BCDM:RefreshAllViewers() end)
+    CooldownTextContainer:AddChild(CooldownText_OffsetX)
+
+    local CooldownText_OffsetY = AG:Create("Slider")
+    CooldownText_OffsetY:SetLabel("Offset Y")
+    CooldownText_OffsetY:SetValue(GeneralDB.CooldownText.Anchors[4])
+    CooldownText_OffsetY:SetSliderValues(-200, 200, 1)
+    CooldownText_OffsetY:SetRelativeWidth(0.33)
+    CooldownText_OffsetY:SetCallback("OnValueChanged", function(_, _, value) GeneralDB.CooldownText.Anchors[4] = value BCDM:RefreshAllViewers() end)
+    CooldownTextContainer:AddChild(CooldownText_OffsetY)
+
+    local CooldownText_FontSize = AG:Create("Slider")
+    CooldownText_FontSize:SetLabel("Font Size")
+    CooldownText_FontSize:SetValue(GeneralDB.CooldownText.FontSize)
+    CooldownText_FontSize:SetSliderValues(8, 40, 1)
+    CooldownText_FontSize:SetRelativeWidth(0.33)
+    CooldownText_FontSize:SetCallback("OnValueChanged", function(_, _, value) GeneralDB.CooldownText.FontSize = value BCDM:RefreshAllViewers() end)
+    CooldownTextContainer:AddChild(CooldownText_FontSize)
+
+    return ScrollFrame
+end
 
 local function DrawCooldownSettings(parentContainer, cooldownViewer)
     local CooldownManagerDB = BCDM.db.global
@@ -156,6 +257,7 @@ local function DrawCooldownSettings(parentContainer, cooldownViewer)
     Charges_FontSize:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.FontSize = value BCDM:UpdateCooldownViewer(cooldownViewer) end)
     ChargesContainer:AddChild(Charges_FontSize)
 
+    return ScrollFrame
 end
 
 function BCDM:CreateGUI()
@@ -181,6 +283,7 @@ function BCDM:CreateGUI()
         GUIContainer:AddChild(Wrapper)
 
         if MainGroup == "General" then
+            DrawGeneralSettings(Wrapper)
         elseif MainGroup == "Essential" then
             DrawCooldownSettings(Wrapper, "EssentialCooldownViewer")
         elseif MainGroup == "Utility" then
