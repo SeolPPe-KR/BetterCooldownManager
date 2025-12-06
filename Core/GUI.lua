@@ -42,15 +42,6 @@ local PowerNames = {
     ["SOUL"] = "Soul",
 }
 
-local BarParents = {
-    {
-        ["EssentialCooldownViewer"] = "Essential",
-        ["UtilityCooldownViewer"] = "Utility",
-        ["BCDM_PowerBar"] = "Power Bar",
-    },
-    { "EssentialCooldownViewer", "UtilityCooldownViewer", "BCDM_PowerBar"}
-}
-
 local ParentAnchors = {
     Utility = {
         {
@@ -59,7 +50,6 @@ local ParentAnchors = {
         },
         { "EssentialCooldownViewer", "BCDM_PowerBar" }
     },
-
     Buffs = {
         {
             ["EssentialCooldownViewer"] = "Essential",
@@ -67,8 +57,32 @@ local ParentAnchors = {
             ["BCDM_PowerBar"]           = "Power Bar",
         },
         { "EssentialCooldownViewer", "UtilityCooldownViewer", "BCDM_PowerBar" }
-    }
+    },
+    CastBar = {
+            {
+                ["EssentialCooldownViewer"] = "Essential",
+                ["UtilityCooldownViewer"]   = "Utility",
+            },
+            { "EssentialCooldownViewer", "UtilityCooldownViewer" }
+        },
+    PowerBar = {
+        {
+            ["EssentialCooldownViewer"] = "Essential",
+            ["UtilityCooldownViewer"]   = "Utility",
+        },
+        { "EssentialCooldownViewer", "UtilityCooldownViewer" }
+    },
+    SecondaryBar = {
+        {
+            ["EssentialCooldownViewer"] = "Essential",
+            ["UtilityCooldownViewer"]   = "Utility",
+            ["BCDM_PowerBar"]           = "Power Bar",
+        },
+        { "EssentialCooldownViewer", "UtilityCooldownViewer", "BCDM_PowerBar" }
+    },
+
 }
+
 
 local function AddAnchor(anchorGroup, key, label)
     for _, existingKey in ipairs(anchorGroup[2]) do if existingKey == key then return end end
@@ -352,11 +366,11 @@ local function DrawCooldownSettings(parentContainer, cooldownViewer)
         LayoutContainer:AddChild(Viewer_AnchorParent)
 
         if C_AddOns.IsAddOnLoaded("UnhaltedUnitFrames") then
-            AddAnchor(ParentAnchors.Utility, "UUF_Player", "Unhalted Unit Frames - Player")
-            AddAnchor(ParentAnchors.Utility, "UUF_Target", "Unhalted Unit Frames - Target")
+            AddAnchor(ParentAnchors.Utility, "UUF_Player", "|cFF8080FFUnhalted|r Unit Frames - Player")
+            AddAnchor(ParentAnchors.Utility, "UUF_Target", "|cFF8080FFUnhalted|r Unit Frames - Target")
 
-            AddAnchor(ParentAnchors.Buffs, "UUF_Player", "Unhalted Unit Frames - Player")
-            AddAnchor(ParentAnchors.Buffs, "UUF_Target", "Unhalted Unit Frames - Target")
+            AddAnchor(ParentAnchors.Buffs, "UUF_Player", "|cFF8080FFUnhalted|r Unit Frames - Player")
+            AddAnchor(ParentAnchors.Buffs, "UUF_Target", "|cFF8080FFUnhalted|r Unit Frames - Target")
         end
 
         local ParentSelector = AG:Create("Dropdown")
@@ -533,7 +547,7 @@ local function DrawPowerBarSettings(parentContainer)
 
     local PowerBar_AnchorParent = AG:Create("Dropdown")
     PowerBar_AnchorParent:SetLabel("Anchor Parent Frame")
-    PowerBar_AnchorParent:SetList(BarParents[1], BarParents[2])
+    PowerBar_AnchorParent:SetList(ParentAnchors.PowerBar[1], ParentAnchors.PowerBar[2])
     PowerBar_AnchorParent:SetValue(PowerBarDB.Anchors[2])
     PowerBar_AnchorParent:SetRelativeWidth(0.33)
     PowerBar_AnchorParent:SetCallback("OnValueChanged", function(_, _, value) PowerBarDB.Anchors[2] = value BCDM:UpdatePowerBar() end)
@@ -705,7 +719,7 @@ local function DrawCastBarSettings(parentContainer)
 
     local CastBar_AnchorParent = AG:Create("Dropdown")
     CastBar_AnchorParent:SetLabel("Anchor Parent Frame")
-    CastBar_AnchorParent:SetList(BarParents[1], BarParents[2])
+    CastBar_AnchorParent:SetList(ParentAnchors.CastBar[1], ParentAnchors.CastBar[2])
     CastBar_AnchorParent:SetValue(CastBarDB.Anchors[2])
     CastBar_AnchorParent:SetRelativeWidth(0.33)
     CastBar_AnchorParent:SetCallback("OnValueChanged", function(_, _, value) CastBarDB.Anchors[2] = value BCDM:UpdateCastBar() end)
@@ -938,7 +952,7 @@ local function DrawSecondaryBarSettings(parentContainer)
 
     local SecondaryBar_AnchorParent = AG:Create("Dropdown")
     SecondaryBar_AnchorParent:SetLabel("Anchor Parent Frame")
-    SecondaryBar_AnchorParent:SetList(BarParents[1], BarParents[2])
+    SecondaryBar_AnchorParent:SetList(ParentAnchors.SecondaryBar[1], ParentAnchors.SecondaryBar[2])
     SecondaryBar_AnchorParent:SetValue(SecondaryBarDB.Anchors[2])
     SecondaryBar_AnchorParent:SetRelativeWidth(0.33)
     SecondaryBar_AnchorParent:SetCallback("OnValueChanged", function(_, _, value) SecondaryBarDB.Anchors[2] = value BCDM:UpdateSecondaryBar() end)
