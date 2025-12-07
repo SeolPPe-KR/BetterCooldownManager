@@ -1,5 +1,5 @@
 <h2 align="center">
-  <img src="https://raw.githubusercontent.com/DaleHuntGB/BetterCooldownManager/refs/heads/main/Media/Logo.png?token=GHSAT0AAAAAADQIMMCUI6BYJBTGVOYANV2A2JVNEOA" alt="BetterCooldownManager Logo" width="256" height="256" />
+  <img src="https://raw.githubusercontent.com/DaleHuntGB/BetterCooldownManager/refs/heads/main/Media/Logo.png?token=GHSAT0AAAAAADQIMMCUI6BYJBTGVOYANV2A2JVNEOA" alt="BetterCooldownManager Logo" width="48" height="48" />
   BetterCooldownManager
 </h2>
 
