@@ -1,7 +1,7 @@
 local _, BCDM = ...
 BCDM.CustomFrames = BCDM.CustomFrames or {}
 
-local DefensiveSpells = {
+local CustomSpells = {
     -- Monk
     ["MONK"] = {
         [115203] = true,        -- Fortifying Brew
@@ -92,12 +92,12 @@ local DefensiveSpells = {
     }
 }
 
-BCDM.DefensiveSpells = DefensiveSpells
+BCDM.CustomSpells = CustomSpells
 
-function CreateCustomDefensiveIcon(spellId)
+function CreateCustomCustomIcon(spellId)
     local CooldownManagerDB = BCDM.db.profile
     local GeneralDB = CooldownManagerDB.General
-    local DefensiveDB = CooldownManagerDB.Defensive
+    local CustomDB = CooldownManagerDB.Custom
     if not spellId then return end
     -- if not C_SpellBook.IsSpellKnown(spellId, Enum.SpellBookSpellBank.Player) and not C_SpellBook.IsSpellKnown(spellId, Enum.SpellBookSpellBank.Pet) then return end
     if not C_SpellBook.IsSpellInSpellBook(spellId) then return end
@@ -105,8 +105,8 @@ function CreateCustomDefensiveIcon(spellId)
     local customSpellIcon = CreateFrame("Button", "BCDM_Custom_" .. spellId, UIParent, "BackdropTemplate")
     customSpellIcon:SetBackdrop({ edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1, insets = { left = 0, right = 0, top = 0, bottom = 0 } })
     customSpellIcon:SetBackdropBorderColor(0, 0, 0, 1)
-    customSpellIcon:SetSize(DefensiveDB.IconSize[1], DefensiveDB.IconSize[2])
-    customSpellIcon:SetPoint(unpack(DefensiveDB.Anchors))
+    customSpellIcon:SetSize(CustomDB.IconSize[1], CustomDB.IconSize[2])
+    customSpellIcon:SetPoint(unpack(CustomDB.Anchors))
     customSpellIcon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     customSpellIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customSpellIcon:RegisterEvent("SPELL_UPDATE_CHARGES")
@@ -116,9 +116,9 @@ function CreateCustomDefensiveIcon(spellId)
     HighLevelContainer:SetFrameLevel(customSpellIcon:GetFrameLevel() + 999)
 
     customSpellIcon.Charges = HighLevelContainer:CreateFontString(nil, "OVERLAY")
-    customSpellIcon.Charges:SetFont(BCDM.Media.Font, DefensiveDB.Count.FontSize, GeneralDB.FontFlag)
-    customSpellIcon.Charges:SetPoint(DefensiveDB.Count.Anchors[1], customSpellIcon, DefensiveDB.Count.Anchors[2], DefensiveDB.Count.Anchors[3], DefensiveDB.Count.Anchors[4])
-    customSpellIcon.Charges:SetTextColor(DefensiveDB.Count.Colour[1], DefensiveDB.Count.Colour[2], DefensiveDB.Count.Colour[3], 1)
+    customSpellIcon.Charges:SetFont(BCDM.Media.Font, CustomDB.Count.FontSize, GeneralDB.FontFlag)
+    customSpellIcon.Charges:SetPoint(CustomDB.Count.Anchors[1], customSpellIcon, CustomDB.Count.Anchors[2], CustomDB.Count.Anchors[3], CustomDB.Count.Anchors[4])
+    customSpellIcon.Charges:SetTextColor(CustomDB.Count.Colour[1], CustomDB.Count.Colour[2], CustomDB.Count.Colour[3], 1)
     customSpellIcon.Charges:SetShadowColor(GeneralDB.Shadows.Colour[1], GeneralDB.Shadows.Colour[2], GeneralDB.Shadows.Colour[3], GeneralDB.Shadows.Colour[4])
     customSpellIcon.Charges:SetShadowOffset(GeneralDB.Shadows.OffsetX, GeneralDB.Shadows.OffsetY)
 
@@ -164,35 +164,35 @@ local LayoutConfig = {
     RIGHT       = { anchor="RIGHT",     offsetMultiplier=0.5, isCenter=true },
 }
 
-function LayoutCustomDefensiveIcons()
-    local DefensiveDB = BCDM.db.profile.Defensive
-    local icons = BCDM.DefensiveBar
+function LayoutCustomCustomIcons()
+    local CustomDB = BCDM.db.profile.Custom
+    local icons = BCDM.CustomBar
     if #icons == 0 then return end
-    if not BCDM.DefensiveContainer then BCDM.DefensiveContainer = CreateFrame("Frame", "DefensiveCooldownViewer", UIParent) end
+    if not BCDM.CustomContainer then BCDM.CustomContainer = CreateFrame("Frame", "CustomCooldownViewer", UIParent) end
 
-    local defensiveContainer = BCDM.DefensiveContainer
-    local spacing = DefensiveDB.Spacing
+    local CustomContainer = BCDM.CustomContainer
+    local spacing = CustomDB.Spacing
     local iconW   = icons[1]:GetWidth()
     local iconH   = icons[1]:GetHeight()
     local totalW  = (iconW + spacing) * #icons - spacing
 
-    defensiveContainer:SetSize(totalW, iconH)
-    local layoutConfig = LayoutConfig[DefensiveDB.Anchors[1]]
+    CustomContainer:SetSize(totalW, iconH)
+    local layoutConfig = LayoutConfig[CustomDB.Anchors[1]]
 
     local offsetX = totalW * layoutConfig.offsetMultiplier
     if layoutConfig.isCenter then offsetX = offsetX - iconW / 2 end
 
-    defensiveContainer:ClearAllPoints()
-    defensiveContainer:SetPoint(DefensiveDB.Anchors[1], DefensiveDB.Anchors[2], DefensiveDB.Anchors[3], DefensiveDB.Anchors[4], DefensiveDB.Anchors[5])
+    CustomContainer:ClearAllPoints()
+    CustomContainer:SetPoint(CustomDB.Anchors[1], CustomDB.Anchors[2], CustomDB.Anchors[3], CustomDB.Anchors[4], CustomDB.Anchors[5])
 
-    local growLeft  = (DefensiveDB.GrowthDirection == "LEFT")
+    local growLeft  = (CustomDB.GrowthDirection == "LEFT")
     for i, icon in ipairs(icons) do
         icon:ClearAllPoints()
         if i == 1 then
             if growLeft then
-                icon:SetPoint("RIGHT", defensiveContainer, "RIGHT", 0, 0)
+                icon:SetPoint("RIGHT", CustomContainer, "RIGHT", 0, 0)
             else
-                icon:SetPoint("LEFT", defensiveContainer, "LEFT", 0, 0)
+                icon:SetPoint("LEFT", CustomContainer, "LEFT", 0, 0)
             end
         else
             local previousIcon = icons[i-1]
@@ -204,32 +204,32 @@ function LayoutCustomDefensiveIcons()
         end
     end
 
-    defensiveContainer:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-    defensiveContainer:SetScript("OnEvent", function(self, event, ...)
+    CustomContainer:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+    CustomContainer:SetScript("OnEvent", function(self, event, ...)
         if event == "PLAYER_SPECIALIZATION_CHANGED" then
-            BCDM:ResetCustomDefensiveIcons()
+            BCDM:ResetCustomCustomIcons()
         end
     end)
 end
 
-function BCDM:SetupCustomDefensiveIcons()
+function BCDM:SetupCustomCustomIcons()
     local CooldownManagerDB = BCDM.db.profile
     wipe(BCDM.CustomFrames)
-    wipe(BCDM.DefensiveBar)
+    wipe(BCDM.CustomBar)
     local _, class = UnitClass("player")
 
-    local spellList = CooldownManagerDB.Defensive.DefensiveSpells[class] or {}
+    local spellList = CooldownManagerDB.Custom.CustomSpells[class] or {}
     for spellId, isActive in pairs(spellList) do
         if spellId and isActive then
-            local frame = CreateCustomDefensiveIcon(spellId)
+            local frame = CreateCustomCustomIcon(spellId)
             BCDM.CustomFrames[spellId] = frame
-            table.insert(BCDM.DefensiveBar, frame)
+            table.insert(BCDM.CustomBar, frame)
         end
     end
-    LayoutCustomDefensiveIcons()
+    LayoutCustomCustomIcons()
 end
 
-function BCDM:ResetCustomDefensiveIcons()
+function BCDM:ResetCustomCustomIcons()
     local CooldownManagerDB = BCDM.db.profile
     -- Can we even destroy frames?
     for spellId, frame in pairs(BCDM.CustomFrames) do
@@ -244,38 +244,38 @@ function BCDM:ResetCustomDefensiveIcons()
         _G["BCDM_Custom_" .. spellId] = nil
     end
     wipe(BCDM.CustomFrames)
-    wipe(BCDM.DefensiveBar)
+    wipe(BCDM.CustomBar)
     local _, class = UnitClass("player")
-    local spellList = CooldownManagerDB.Defensive.DefensiveSpells[class] or {}
+    local spellList = CooldownManagerDB.Custom.CustomSpells[class] or {}
     for spellId, isActive in pairs(spellList) do
         if spellId and isActive then
-            local frame = CreateCustomDefensiveIcon(spellId)
+            local frame = CreateCustomCustomIcon(spellId)
             BCDM.CustomFrames[spellId] = frame
-            table.insert(BCDM.DefensiveBar, frame)
+            table.insert(BCDM.CustomBar, frame)
         end
     end
-    LayoutCustomDefensiveIcons()
+    LayoutCustomCustomIcons()
 end
 
-function BCDM:UpdateDefensiveIcons()
+function BCDM:UpdateCustomIcons()
     local CooldownManagerDB = BCDM.db.profile
     local GeneralDB = CooldownManagerDB.General
-    local DefensiveDB = CooldownManagerDB.Defensive
-    BCDM.DefensiveContainer:ClearAllPoints()
-    BCDM.DefensiveContainer:SetPoint(DefensiveDB.Anchors[1], DefensiveDB.Anchors[2], DefensiveDB.Anchors[3], DefensiveDB.Anchors[4], DefensiveDB.Anchors[5])
-    for _, icon in ipairs(BCDM.DefensiveBar) do
+    local CustomDB = CooldownManagerDB.Custom
+    BCDM.CustomContainer:ClearAllPoints()
+    BCDM.CustomContainer:SetPoint(CustomDB.Anchors[1], CustomDB.Anchors[2], CustomDB.Anchors[3], CustomDB.Anchors[4], CustomDB.Anchors[5])
+    for _, icon in ipairs(BCDM.CustomBar) do
         if icon then
-            icon:SetSize(DefensiveDB.IconSize[1], DefensiveDB.IconSize[2])
+            icon:SetSize(CustomDB.IconSize[1], CustomDB.IconSize[2])
             icon.Icon:SetTexCoord((GeneralDB.IconZoom) * 0.5, 1 - (GeneralDB.IconZoom) * 0.5, (GeneralDB.IconZoom) * 0.5, 1 - (GeneralDB.IconZoom) * 0.5)
             icon.Charges:ClearAllPoints()
-            icon.Charges:SetFont(BCDM.Media.Font, DefensiveDB.Count.FontSize, GeneralDB.FontFlag)
-            icon.Charges:SetPoint(DefensiveDB.Count.Anchors[1], icon, DefensiveDB.Count.Anchors[2], DefensiveDB.Count.Anchors[3], DefensiveDB.Count.Anchors[4])
-            icon.Charges:SetTextColor(DefensiveDB.Count.Colour[1], DefensiveDB.Count.Colour[2], DefensiveDB.Count.Colour[3], 1)
+            icon.Charges:SetFont(BCDM.Media.Font, CustomDB.Count.FontSize, GeneralDB.FontFlag)
+            icon.Charges:SetPoint(CustomDB.Count.Anchors[1], icon, CustomDB.Count.Anchors[2], CustomDB.Count.Anchors[3], CustomDB.Count.Anchors[4])
+            icon.Charges:SetTextColor(CustomDB.Count.Colour[1], CustomDB.Count.Colour[2], CustomDB.Count.Colour[3], 1)
             icon.Charges:SetShadowColor(GeneralDB.Shadows.Colour[1], GeneralDB.Shadows.Colour[2], GeneralDB.Shadows.Colour[3], GeneralDB.Shadows.Colour[4])
             icon.Charges:SetShadowOffset(GeneralDB.Shadows.OffsetX, GeneralDB.Shadows.OffsetY)
         end
     end
-    LayoutCustomDefensiveIcons()
+    LayoutCustomCustomIcons()
 end
 
 local SpellsChangedEventFrame = CreateFrame("Frame")
@@ -283,18 +283,18 @@ SpellsChangedEventFrame:RegisterEvent("SPELLS_CHANGED")
 SpellsChangedEventFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "SPELLS_CHANGED" then
         if InCombatLockdown() then return end
-        BCDM:ResetCustomDefensiveIcons()
+        BCDM:ResetCustomCustomIcons()
     end
 end)
 
-function BCDM:CopyDefensiveSpellsToDB()
+function BCDM:CopyCustomSpellsToDB()
     local profileDB = BCDM.db.profile
 
     local _, class = UnitClass("player")
-    local sourceTable = DefensiveSpells[class]
-    if not profileDB.Defensive.DefensiveSpells[class] then profileDB.Defensive.DefensiveSpells[class] = {} end
+    local sourceTable = CustomSpells[class]
+    if not profileDB.Custom.CustomSpells[class] then profileDB.Custom.CustomSpells[class] = {} end
 
-    local classDB = profileDB.Defensive.DefensiveSpells[class]
+    local classDB = profileDB.Custom.CustomSpells[class]
     for spellId, value in pairs(sourceTable) do
         if classDB[spellId] == nil then
             classDB[spellId] = value
@@ -302,24 +302,24 @@ function BCDM:CopyDefensiveSpellsToDB()
     end
 end
 
-function BCDM:AddDefensiveSpell(value)
+function BCDM:AddCustomSpell(value)
     if value == nil then return end
     local spellId = C_Spell.GetSpellInfo(value).spellID or value
     if not spellId then return end
     local profileDB = BCDM.db.profile
     local _, class = UnitClass("player")
-    if not profileDB.Defensive.DefensiveSpells[class] then profileDB.Defensive.DefensiveSpells[class] = {} end
-    profileDB.Defensive.DefensiveSpells[class][spellId] = true
-    BCDM:ResetCustomDefensiveIcons()
+    if not profileDB.Custom.CustomSpells[class] then profileDB.Custom.CustomSpells[class] = {} end
+    profileDB.Custom.CustomSpells[class][spellId] = true
+    BCDM:ResetCustomCustomIcons()
 end
 
-function BCDM:RemoveDefensiveSpell(value)
+function BCDM:RemoveCustomSpell(value)
     if value == nil then return end
     local spellId = C_Spell.GetSpellInfo(value).spellID or value
     if not spellId then return end
     local profileDB = BCDM.db.profile
     local _, class = UnitClass("player")
-    if not profileDB.Defensive.DefensiveSpells[class] then profileDB.Defensive.DefensiveSpells[class] = {} end
-    profileDB.Defensive.DefensiveSpells[class][spellId] = nil
-    BCDM:ResetCustomDefensiveIcons()
+    if not profileDB.Custom.CustomSpells[class] then profileDB.Custom.CustomSpells[class] = {} end
+    profileDB.Custom.CustomSpells[class][spellId] = nil
+    BCDM:ResetCustomCustomIcons()
 end

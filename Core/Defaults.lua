@@ -98,7 +98,7 @@ BCDM.Defaults = {
                 Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
             },
         },
-        Defensive = {
+        Custom = {
             IconSize = {36, 36},
             Anchors = {"BOTTOMRIGHT", "UUF_Player", "TOPRIGHT", 0, 1},
             GrowthDirection = "LEFT",
@@ -108,7 +108,7 @@ BCDM.Defaults = {
                 Colour = {1, 1, 1},
                 Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
             },
-            DefensiveSpells = {}
+            CustomSpells = {}
         },
         PowerBar = {
             Height = 13,

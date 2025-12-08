@@ -4,5 +4,5 @@
      <Script file="SecondaryPowerBar.lua"/>
      <Script file="CastBar.lua"/>
      <Script file="CentreBuffs.lua"/>
-     <Script file="DefensiveBar.lua"/>
+     <Script file="CustomBar.lua"/>
 </Ui>

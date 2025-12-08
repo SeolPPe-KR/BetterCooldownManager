@@ -78,7 +78,7 @@ local ParentAnchors = {
         },
         { "EssentialCooldownViewer", "UtilityCooldownViewer", "BCDM_PowerBar", "BCDM_SecondaryPowerBar" }
     },
-    Defensives = {
+    Custom = {
         {
             ["EssentialCooldownViewer"] = "Essential",
             ["UtilityCooldownViewer"]   = "Utility",
@@ -658,9 +658,9 @@ local function DrawCooldownSettings(parentContainer, cooldownViewer)
     return ScrollFrame
 end
 
-local function DrawDefensiveSettings(parentContainer)
+local function DrawCustomSettings(parentContainer)
     local CooldownManagerDB = BCDM.db.profile
-    local CooldownViewerDB = CooldownManagerDB[BCDM.CooldownViewerToDB["DefensiveCooldownViewer"]]
+    local CooldownViewerDB = CooldownManagerDB[BCDM.CooldownViewerToDB["CustomCooldownViewer"]]
 
     local ScrollFrame = AG:Create("ScrollFrame")
     ScrollFrame:SetLayout("Flow")
@@ -679,7 +679,7 @@ local function DrawDefensiveSettings(parentContainer)
     Viewer_AnchorFrom:SetList(Anchors[1], Anchors[2])
     Viewer_AnchorFrom:SetValue(CooldownViewerDB.Anchors[1])
     Viewer_AnchorFrom:SetRelativeWidth(0.5)
-    Viewer_AnchorFrom:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[1] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_AnchorFrom:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[1] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_AnchorFrom)
 
     local Viewer_AnchorTo = AG:Create("Dropdown")
@@ -687,27 +687,27 @@ local function DrawDefensiveSettings(parentContainer)
     Viewer_AnchorTo:SetList(Anchors[1], Anchors[2])
     Viewer_AnchorTo:SetValue(CooldownViewerDB.Anchors[3])
     Viewer_AnchorTo:SetRelativeWidth(0.5)
-    Viewer_AnchorTo:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[3] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_AnchorTo:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[3] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_AnchorTo)
 
     local Viewer_AnchorParent = AG:Create("EditBox")
     Viewer_AnchorParent:SetLabel("Anchor Parent Frame")
     Viewer_AnchorParent:SetText(CooldownViewerDB.Anchors[2])
     Viewer_AnchorParent:SetRelativeWidth(0.5)
-    Viewer_AnchorParent:SetCallback("OnEnterPressed", function(_, _, value) CooldownViewerDB.Anchors[2] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_AnchorParent:SetCallback("OnEnterPressed", function(_, _, value) CooldownViewerDB.Anchors[2] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_AnchorParent)
 
     if C_AddOns.IsAddOnLoaded("UnhaltedUnitFrames") then
-        AddAnchor(ParentAnchors.Defensives, "UUF_Player", "|cFF8080FFUnhalted|r Unit Frames - Player")
-        AddAnchor(ParentAnchors.Defensives, "UUF_Target", "|cFF8080FFUnhalted|r Unit Frames - Target")
+        AddAnchor(ParentAnchors.Custom, "UUF_Player", "|cFF8080FFUnhalted|r Unit Frames - Player")
+        AddAnchor(ParentAnchors.Custom, "UUF_Target", "|cFF8080FFUnhalted|r Unit Frames - Target")
     end
 
     local ParentSelector = AG:Create("Dropdown")
     ParentSelector:SetLabel("Parent Selector")
-    ParentSelector:SetList(ParentAnchors.Defensives[1], ParentAnchors.Defensives[2])
+    ParentSelector:SetList(ParentAnchors.Custom[1], ParentAnchors.Custom[2])
     ParentSelector:SetValue(CooldownViewerDB.Anchors[2])
     ParentSelector:SetRelativeWidth(0.5)
-    ParentSelector:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[2] = value Viewer_AnchorParent:SetText(value) BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    ParentSelector:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[2] = value Viewer_AnchorParent:SetText(value) BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(ParentSelector)
 
     local GrowthDirection = AG:Create("Dropdown")
@@ -715,7 +715,7 @@ local function DrawDefensiveSettings(parentContainer)
     GrowthDirection:SetList({ ["LEFT"] = "Left", ["RIGHT"] = "Right", })
     GrowthDirection:SetValue(CooldownViewerDB.GrowthDirection)
     GrowthDirection:SetRelativeWidth(1)
-    GrowthDirection:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.GrowthDirection = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    GrowthDirection:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.GrowthDirection = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(GrowthDirection)
 
     local Viewer_OffsetX = AG:Create("Slider")
@@ -723,7 +723,7 @@ local function DrawDefensiveSettings(parentContainer)
     Viewer_OffsetX:SetValue(CooldownViewerDB.Anchors[4])
     Viewer_OffsetX:SetSliderValues(-2000, 2000, 1)
     Viewer_OffsetX:SetRelativeWidth(0.25)
-    Viewer_OffsetX:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[4] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_OffsetX:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[4] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_OffsetX)
 
     local Viewer_OffsetY = AG:Create("Slider")
@@ -731,7 +731,7 @@ local function DrawDefensiveSettings(parentContainer)
     Viewer_OffsetY:SetValue(CooldownViewerDB.Anchors[5])
     Viewer_OffsetY:SetSliderValues(-2000, 2000, 1)
     Viewer_OffsetY:SetRelativeWidth(0.25)
-    Viewer_OffsetY:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[5] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_OffsetY:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Anchors[5] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_OffsetY)
 
     local Viewer_IconWidth = AG:Create("Slider")
@@ -739,7 +739,7 @@ local function DrawDefensiveSettings(parentContainer)
     Viewer_IconWidth:SetValue(CooldownViewerDB.IconSize[1])
     Viewer_IconWidth:SetSliderValues(16, 128, 1)
     Viewer_IconWidth:SetRelativeWidth(0.25)
-    Viewer_IconWidth:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.IconSize[1] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_IconWidth:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.IconSize[1] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_IconWidth)
 
     local Viewer_IconHeight = AG:Create("Slider")
@@ -747,7 +747,7 @@ local function DrawDefensiveSettings(parentContainer)
     Viewer_IconHeight:SetValue(CooldownViewerDB.IconSize[2])
     Viewer_IconHeight:SetSliderValues(16, 128, 1)
     Viewer_IconHeight:SetRelativeWidth(0.25)
-    Viewer_IconHeight:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.IconSize[2] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Viewer_IconHeight:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.IconSize[2] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     LayoutContainer:AddChild(Viewer_IconHeight)
 
     local ChargesContainer = AG:Create("InlineGroup")
@@ -761,7 +761,7 @@ local function DrawDefensiveSettings(parentContainer)
     Charges_AnchorFrom:SetList(Anchors[1], Anchors[2])
     Charges_AnchorFrom:SetValue(CooldownViewerDB.Count.Anchors[1])
     Charges_AnchorFrom:SetRelativeWidth(0.33)
-    Charges_AnchorFrom:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[1] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Charges_AnchorFrom:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[1] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     ChargesContainer:AddChild(Charges_AnchorFrom)
 
     local Charges_AnchorTo = AG:Create("Dropdown")
@@ -769,14 +769,14 @@ local function DrawDefensiveSettings(parentContainer)
     Charges_AnchorTo:SetList(Anchors[1], Anchors[2])
     Charges_AnchorTo:SetValue(CooldownViewerDB.Count.Anchors[2])
     Charges_AnchorTo:SetRelativeWidth(0.33)
-    Charges_AnchorTo:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[2] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Charges_AnchorTo:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[2] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     ChargesContainer:AddChild(Charges_AnchorTo)
 
     local Charges_Colour = AG:Create("ColorPicker")
     Charges_Colour:SetLabel("Font Colour")
     Charges_Colour:SetColor(unpack(CooldownViewerDB.Count.Colour))
     Charges_Colour:SetRelativeWidth(0.33)
-    Charges_Colour:SetCallback("OnValueChanged", function(_, _, r, g, b) CooldownViewerDB.Count.Colour = {r, g, b} BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Charges_Colour:SetCallback("OnValueChanged", function(_, _, r, g, b) CooldownViewerDB.Count.Colour = {r, g, b} BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     ChargesContainer:AddChild(Charges_Colour)
 
     local Charges_OffsetX = AG:Create("Slider")
@@ -784,7 +784,7 @@ local function DrawDefensiveSettings(parentContainer)
     Charges_OffsetX:SetValue(CooldownViewerDB.Count.Anchors[3])
     Charges_OffsetX:SetSliderValues(-200, 200, 1)
     Charges_OffsetX:SetRelativeWidth(0.33)
-    Charges_OffsetX:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[3] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Charges_OffsetX:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[3] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     ChargesContainer:AddChild(Charges_OffsetX)
 
     local Charges_OffsetY = AG:Create("Slider")
@@ -792,7 +792,7 @@ local function DrawDefensiveSettings(parentContainer)
     Charges_OffsetY:SetValue(CooldownViewerDB.Count.Anchors[4])
     Charges_OffsetY:SetSliderValues(-200, 200, 1)
     Charges_OffsetY:SetRelativeWidth(0.33)
-    Charges_OffsetY:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[4] = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Charges_OffsetY:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.Anchors[4] = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     ChargesContainer:AddChild(Charges_OffsetY)
 
     local Charges_FontSize = AG:Create("Slider")
@@ -800,76 +800,76 @@ local function DrawDefensiveSettings(parentContainer)
     Charges_FontSize:SetValue(CooldownViewerDB.Count.FontSize)
     Charges_FontSize:SetSliderValues(8, 40, 1)
     Charges_FontSize:SetRelativeWidth(0.33)
-    Charges_FontSize:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.FontSize = value BCDM:UpdateCooldownViewer("DefensiveCooldownViewer") end)
+    Charges_FontSize:SetCallback("OnValueChanged", function(_, _, value) CooldownViewerDB.Count.FontSize = value BCDM:UpdateCooldownViewer("CustomCooldownViewer") end)
     ChargesContainer:AddChild(Charges_FontSize)
 
     ------------------------------------------------------------
-    -- Defensive Ability Section
+    -- Custom Ability Section
     ------------------------------------------------------------
 
-    local SupportedDefensivesContainer = AG:Create("InlineGroup")
-    SupportedDefensivesContainer:SetTitle("Defensives")
-    SupportedDefensivesContainer:SetFullWidth(true)
-    SupportedDefensivesContainer:SetLayout("Flow")
-    ScrollFrame:AddChild(SupportedDefensivesContainer)
+    local SupportedCustomContainer = AG:Create("InlineGroup")
+    SupportedCustomContainer:SetTitle("Custom")
+    SupportedCustomContainer:SetFullWidth(true)
+    SupportedCustomContainer:SetLayout("Flow")
+    ScrollFrame:AddChild(SupportedCustomContainer)
 
     local playerClass = select(2, UnitClass("player"))
 
-    local infoTag = CreateInfoTag( "Below are all the abilities for " .. ClassToPrettyClass[playerClass] .. ". Check the ones you want to track in the |cFF8080FFDefensive Cooldown Viewer|r." )
-    SupportedDefensivesContainer:AddChild(infoTag)
+    local infoTag = CreateInfoTag( "Below are all the abilities for " .. ClassToPrettyClass[playerClass] .. ". Check the ones you want to track in the |cFF8080FFCustom Cooldown Viewer|r." )
+    SupportedCustomContainer:AddChild(infoTag)
 
-    local function BuildDefensiveSpellList()
-        local profile = BCDM.db.profile.Defensive.DefensiveSpells[playerClass] or {}
+    local function BuildCustomSpellList()
+        local profile = BCDM.db.profile.Custom.CustomSpells[playerClass] or {}
         BCDMGUI.classContainer:ReleaseChildren()
         for spellID in pairs(profile) do
-            local defensiveCheckBox = AG:Create("CheckBox")
-            defensiveCheckBox:SetLabel(FetchSpellInformation(spellID))
-            defensiveCheckBox:SetRelativeWidth(0.33)
-            defensiveCheckBox:SetValue(profile[spellID])
-            defensiveCheckBox:SetCallback("OnValueChanged", function(_, _, value) profile[spellID] = value BCDM:ResetCustomDefensiveIcons() end)
-            defensiveCheckBox:SetCallback("OnEnter", function() GameTooltip:SetOwner(defensiveCheckBox.frame, "ANCHOR_CURSOR") GameTooltip:SetSpellByID(spellID) end)
-            defensiveCheckBox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
-            BCDMGUI.classContainer:AddChild(defensiveCheckBox)
+            local CustomCheckBox = AG:Create("CheckBox")
+            CustomCheckBox:SetLabel(FetchSpellInformation(spellID))
+            CustomCheckBox:SetRelativeWidth(0.33)
+            CustomCheckBox:SetValue(profile[spellID])
+            CustomCheckBox:SetCallback("OnValueChanged", function(_, _, value) profile[spellID] = value BCDM:ResetCustomCustomIcons() end)
+            CustomCheckBox:SetCallback("OnEnter", function() GameTooltip:SetOwner(CustomCheckBox.frame, "ANCHOR_CURSOR") GameTooltip:SetSpellByID(spellID) end)
+            CustomCheckBox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
+            BCDMGUI.classContainer:AddChild(CustomCheckBox)
         end
     end
 
-    local function GetCustomDefensiveList()
-        local DefensiveList = {}
-        local profile = BCDM.db.profile.Defensive.DefensiveSpells[playerClass]
-        local defaults = BCDM.DefensiveSpells[playerClass]
+    local function GetCustomCustomList()
+        local CustomList = {}
+        local profile = BCDM.db.profile.Custom.CustomSpells[playerClass]
+        local defaults = BCDM.CustomSpells[playerClass]
         for spellID in pairs(profile) do
             if not defaults[spellID] then
-                DefensiveList[spellID] = FetchSpellInformation(spellID)
+                CustomList[spellID] = FetchSpellInformation(spellID)
             end
         end
-        return DefensiveList
+        return CustomList
     end
 
     local function RefreshRemoveDropdown()
-        local list = GetCustomDefensiveList()
-        RemoveDefensiveDropdown:SetList(list)
-        RemoveDefensiveDropdown:SetValue(nil)
+        local list = GetCustomCustomList()
+        RemoveCustomDropdown:SetList(list)
+        RemoveCustomDropdown:SetValue(nil)
 
         if next(list) == nil then
-            RemoveDefensiveDropdown:SetDisabled(true)
+            RemoveCustomDropdown:SetDisabled(true)
         else
-            RemoveDefensiveDropdown:SetDisabled(false)
+            RemoveCustomDropdown:SetDisabled(false)
         end
     end
 
-    local AddDefensiveEditBox = AG:Create("EditBox")
-    AddDefensiveEditBox:SetLabel("SpellID / Spell Name")
-    AddDefensiveEditBox:SetRelativeWidth(0.5)
-    AddDefensiveEditBox:SetCallback("OnEnterPressed", function() local input = AddDefensiveEditBox:GetText() if not input or input == "" then return end BCDM:AddDefensiveSpell(input) BCDM:Print("Added: " .. FetchSpellInformation(input)) RefreshRemoveDropdown() BuildDefensiveSpellList() AddDefensiveEditBox:SetText("") AddDefensiveEditBox:ClearFocus() end)
-    AddDefensiveEditBox:SetCallback("OnEnter", function() GameTooltip:SetOwner(AddDefensiveEditBox.frame, "ANCHOR_CURSOR") GameTooltip:SetText("|cFF8080FFSpell Name|r will automatically be converted to its respective SpellID") end)
-    AddDefensiveEditBox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
-    SupportedDefensivesContainer:AddChild(AddDefensiveEditBox)
+    local AddCustomEditBox = AG:Create("EditBox")
+    AddCustomEditBox:SetLabel("SpellID / Spell Name")
+    AddCustomEditBox:SetRelativeWidth(0.5)
+    AddCustomEditBox:SetCallback("OnEnterPressed", function() local input = AddCustomEditBox:GetText() if not input or input == "" then return end BCDM:AddCustomSpell(input) BCDM:Print("Added: " .. FetchSpellInformation(input)) RefreshRemoveDropdown() BuildCustomSpellList() AddCustomEditBox:SetText("") AddCustomEditBox:ClearFocus() end)
+    AddCustomEditBox:SetCallback("OnEnter", function() GameTooltip:SetOwner(AddCustomEditBox.frame, "ANCHOR_CURSOR") GameTooltip:SetText("|cFF8080FFSpell Name|r will automatically be converted to its respective SpellID") end)
+    AddCustomEditBox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
+    SupportedCustomContainer:AddChild(AddCustomEditBox)
 
-    RemoveDefensiveDropdown = AG:Create("Dropdown")
-    RemoveDefensiveDropdown:SetLabel("Remove Defensive Ability")
-    RemoveDefensiveDropdown:SetRelativeWidth(0.5)
-    RemoveDefensiveDropdown:SetCallback("OnValueChanged", function(_, _, spellID) if not spellID then return end BCDM:RemoveDefensiveSpell(spellID) BCDM:Print("Removed: " .. FetchSpellInformation(spellID)) RefreshRemoveDropdown() BuildDefensiveSpellList() end)
-    SupportedDefensivesContainer:AddChild(RemoveDefensiveDropdown)
+    RemoveCustomDropdown = AG:Create("Dropdown")
+    RemoveCustomDropdown:SetLabel("Remove Custom Ability")
+    RemoveCustomDropdown:SetRelativeWidth(0.5)
+    RemoveCustomDropdown:SetCallback("OnValueChanged", function(_, _, spellID) if not spellID then return end BCDM:RemoveCustomSpell(spellID) BCDM:Print("Removed: " .. FetchSpellInformation(spellID)) RefreshRemoveDropdown() BuildCustomSpellList() end)
+    SupportedCustomContainer:AddChild(RemoveCustomDropdown)
 
     RefreshRemoveDropdown()
 
@@ -877,10 +877,10 @@ local function DrawDefensiveSettings(parentContainer)
     classContainer:SetTitle(ClassToPrettyClass[playerClass])
     classContainer:SetFullWidth(true)
     classContainer:SetLayout("Flow")
-    SupportedDefensivesContainer:AddChild(classContainer)
+    SupportedCustomContainer:AddChild(classContainer)
     BCDMGUI.classContainer = classContainer
 
-    BuildDefensiveSpellList()
+    BuildCustomSpellList()
     ScrollFrame:DoLayout()
 
     return ScrollFrame
@@ -1589,8 +1589,8 @@ function BCDM:CreateGUI()
             DrawCooldownSettings(Wrapper, "UtilityCooldownViewer")
         elseif MainGroup == "Buffs" then
             DrawCooldownSettings(Wrapper, "BuffIconCooldownViewer")
-        elseif MainGroup == "Defensives" then
-            DrawDefensiveSettings(Wrapper, "DefensiveCooldownViewer")
+        elseif MainGroup == "Custom" then
+            DrawCustomSettings(Wrapper, "CustomCooldownViewer")
         elseif MainGroup == "CastBar" then
             DrawCastBarSettings(Wrapper)
         elseif MainGroup == "PowerBar" then
@@ -1609,7 +1609,7 @@ function BCDM:CreateGUI()
         { text = "Essential", value = "Essential"},
         { text = "Utility", value = "Utility"},
         { text = "Buffs", value = "Buffs"},
-        { text = "Defensives", value = "Defensives"},
+        { text = "Custom", value = "Custom"},
         { text = "Cast Bar", value = "CastBar"},
         { text = "Power Bar", value = "PowerBar"},
         { text = "Secondary Bar", value = "SecondaryBar"},

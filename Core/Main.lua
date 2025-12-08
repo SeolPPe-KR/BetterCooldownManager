@@ -9,14 +9,14 @@ function AddOn:OnInitialize()
         end
     end
     if BCDM.db.global.UseGlobalProfile then BCDM.db:SetProfile(BCDM.db.global.GlobalProfile or "Default") end
-    BCDM:CopyDefensiveSpellsToDB()
+    BCDM:CopyCustomSpellsToDB()
 end
 
 local WaitForAddOns = CreateFrame("Frame")
 WaitForAddOns:RegisterEvent("PLAYER_LOGIN")
 WaitForAddOns:SetScript("OnEvent", function(self)
     if C_AddOns.IsAddOnLoaded("UnhaltedUnitFrames") then
-        BCDM:SetupCustomDefensiveIcons()
+        BCDM:SetupCustomCustomIcons()
     end
     self:UnregisterEvent("PLAYER_LOGIN")
 end)

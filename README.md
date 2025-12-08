@@ -28,7 +28,7 @@ BetterCooldownManager extends Blizzard’s Edit Mode instead of replacing it. Th
 * Player Cast Bar
 * Player Primary Power Bar
 * Player Secondary Power Bar
-* Defensive Cooldown Viewer
+* Custom Cooldown Viewer
 
 ## Cooldown Viewers
 
@@ -36,7 +36,7 @@ All Viewers share the same settings, meaning you have full control on what you w
 
 ### Anchoring
 
-* Utility, Buffs, and Defensive Viewers can anchor to a broad selection of frames.
+* Utility, Buffs, and Custom Viewers can anchor to a broad selection of frames.
 * Add custom anchors manually or pick from predefined frames with the **Parent Selector**.
 
 ### Positioning & Layout
@@ -50,11 +50,11 @@ All Viewers share the same settings, meaning you have full control on what you w
 * Custom Colours.
 * Custom Size & Offset.
 
-## Defensive Cooldown Viewer
+## Custom Cooldown Viewer
 
-It creates a dedicated container that tracks defensive abilities automatically based on your class and specialization.
+It creates a dedicated container that tracks Custom abilities automatically based on your class and specialization.
 
 ### Highlights
 
 * Same customization as the other Cooldown Viewers.
-* Predefined Defensive List for each Class & Specialization.
+* Predefined Custom List for each Class & Specialization.
