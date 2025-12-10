@@ -825,7 +825,6 @@ local function DrawCustomBarSettings(parentContainer)
 
     local function BuildCustomSpellList()
         local profile = BCDM.db.profile.Custom.CustomSpells[playerClass][specName:upper()] or {}
-        DevTool:AddData(profile)
         BCDMGUI.classContainer:ReleaseChildren()
         for spellID in pairs(profile) do
             local SpellContainer = AG:Create("SimpleGroup")
