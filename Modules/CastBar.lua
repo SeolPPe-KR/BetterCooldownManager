@@ -101,7 +101,14 @@ local function CreateCastBar()
             CastBar:SetTimerDuration(castDuration, 0)
             CastBar.Icon:SetTexture(select(3, UnitCastingInfo("player")) or nil)
             CastBar.SpellName:SetText(UnitCastingInfo("player") or "")
-            CastBar:SetScript("OnUpdate", function() local remainingDuration = castDuration:GetRemainingDuration() CastBar.Duration:SetText(string.format("%.1f", remainingDuration)) end)
+            CastBar:SetScript("OnUpdate", function()
+                local remainingDuration = castDuration:GetRemainingDuration()
+                if remainingDuration < BCDM.db.profile.CastBar.Duration.ExpirationThreshold then
+                    CastBar.Duration:SetText(string.format("%.1f", remainingDuration))
+                else
+                    CastBar.Duration:SetText(string.format("%.0f", remainingDuration))
+                end
+            end)
             CastBarContainer:Show()
             CastBar:Show()
         elseif CHANNEL_START[event] then
@@ -111,7 +118,15 @@ local function CreateCastBar()
             CastBar:SetMinMaxValues(0, channelDuration:GetTotalDuration())
             CastBar.SpellName:SetText(UnitChannelInfo("player") or "")
             CastBar.Icon:SetTexture(select(3, UnitChannelInfo("player")) or nil)
-            CastBar:SetScript("OnUpdate", function() local remainingDuration = channelDuration:GetRemainingDuration() CastBar:SetValue(remainingDuration) CastBar.Duration:SetText(string.format("%.1f", remainingDuration)) end)
+            CastBar:SetScript("OnUpdate", function()
+                local remainingDuration = channelDuration:GetRemainingDuration()
+                CastBar:SetValue(remainingDuration)
+                if remainingDuration < BCDM.db.profile.CastBar.Duration.ExpirationThreshold then
+                    CastBar.Duration:SetText(string.format("%.1f", remainingDuration))
+                else
+                    CastBar.Duration:SetText(string.format("%.0f", remainingDuration))
+                end
+            end)
             CastBarContainer:Show()
             CastBar:Show()
         elseif CAST_STOP[event] then
