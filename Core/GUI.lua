@@ -132,7 +132,7 @@ local function FetchSpellInformation(spellId)
     if spellData then
         local spellName = spellData.name
         local icon = spellData.iconID
-        return string.format("|T%s:20:20|t %s", icon, spellName)
+        return string.format("|T%s:16:16|t %s", icon, spellName)
     end
 end
 
@@ -140,7 +140,7 @@ local function FetchItemInformation(itemId)
     local itemName = C_Item.GetItemInfo(itemId)
     local itemTexture = select(10, C_Item.GetItemInfo(itemId))
     if itemName then
-        return string.format("|T%s:20:20|t %s", itemTexture, itemName)
+        return string.format("|T%s:16:16|t %s", itemTexture, itemName)
     end
 end
 
@@ -1859,9 +1859,9 @@ function BCDM:CreateGUI()
     GUIFrame = AG:Create("Frame")
     GUIFrame:SetTitle("|T" .. BCDM.Icon .. ":16:16|t " .. BCDM.AddOnName)
     GUIFrame:SetLayout("Fill")
-    GUIFrame:SetWidth(900)
-    GUIFrame:SetHeight(600)
-    GUIFrame:EnableResize(true)
+    GUIFrame:SetWidth(800)
+    GUIFrame:SetHeight(800)
+    GUIFrame:EnableResize(false)
     GUIFrame:SetCallback("OnClose", function(widget) AG:Release(widget) OpenedGUI = false BCDM:RefreshAllViewers() if CooldownViewerSettings:IsShown() then CooldownViewerSettings:Hide() end end)
 
     local function SelectedGroup(GUIContainer, _, MainGroup)
