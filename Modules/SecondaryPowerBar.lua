@@ -143,7 +143,7 @@ local function UpdateRuneDisplay()
         end
         runeBar:SetSize(runeBar:GetWidth(), parent:GetHeight() - 2)
         runeBar:Show()
-        local start, duration, ready = GetRuneCooldown(i)
+        local _, _, ready = GetRuneCooldown(i)
         if ready then
             runeBar:SetValue(1)
             runeBar:SetStatusBarColor(r, g, b, a)
