@@ -1,78 +1,45 @@
 local _, BCDM = ...
 
-local function FetchCastBarColour(unit)
-    local CooldownManagerDB = BCDM.db.profile
-    local CastBarDB = CooldownManagerDB.CastBar
+local function FetchCastBarColour()
+    local CastBarDB = BCDM.db.profile.CastBar
     if CastBarDB.ColourByClass then
-        local _, class = UnitClass(unit)
-        local classColour = RAID_CLASS_COLORS[class]
-        if classColour then return classColour.r, classColour.g, classColour.b, 1 end
+        local _, class = UnitClass("player")
+        local colour = RAID_CLASS_COLORS[class]
+        return colour.r, colour.g, colour.b, 1
+    else
+        return CastBarDB.ForegroundColour[1], CastBarDB.ForegroundColour[2], CastBarDB.ForegroundColour[3], CastBarDB.ForegroundColour[4]
     end
-    return CastBarDB.FGColour[1], CastBarDB.FGColour[2], CastBarDB.FGColour[3], CastBarDB.FGColour[4]
 end
 
-local function CreateCastBar()
-    local CooldownManagerDB = BCDM.db.profile
-    local GeneralDB = CooldownManagerDB.General
-    local CastBarDB = CooldownManagerDB.CastBar
-    if BCDM.CastBar then return end
-    local CastBarContainer = CreateFrame("Frame", "BCDM_CastBarContainer", UIParent, "BackdropTemplate")
-    CastBarContainer:SetPoint(CastBarDB.Anchors[1], CastBarDB.Anchors[2], CastBarDB.Anchors[3], CastBarDB.Anchors[4], CastBarDB.Anchors[5])
-    CastBarContainer:SetSize(224, CastBarDB.Height)
-    CastBarContainer:SetBackdrop({ bgFile = BCDM.Media.CastBarBGTexture, edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1, })
-    CastBarContainer:SetBackdropColor(20/255, 20/255, 20/255, 1)
-    CastBarContainer:SetBackdropBorderColor(0, 0, 0, 1)
+local function CreatePips(empoweredStages)
+    if not BCDM.CastBar then return end
 
-    local CastBarIcon = CastBarContainer:CreateTexture("BCDM_CastBarIcon", "ARTWORK")
-    CastBarIcon:SetSize(CastBarDB.Height - 2, CastBarDB.Height - 2)
-    CastBarIcon:SetPoint("LEFT", CastBarContainer, "LEFT", 1, 0)
-    CastBarIcon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+    for _, pip in ipairs(BCDM.CastBar.Pips) do pip:Hide() pip:SetParent(nil) end
+    BCDM.CastBar.Pips = {}
 
-    local CastBar = CreateFrame("StatusBar", "BCDM_CastBar", CastBarContainer)
-    CastBar:SetPoint("LEFT", CastBarIcon, "RIGHT", 0, 0)
-    CastBar:SetPoint("TOPRIGHT", CastBarContainer, "TOPRIGHT", 1, -1)
-    CastBar:SetPoint("BOTTOMRIGHT", CastBarContainer, "BOTTOMRIGHT", -1, 1)
-    CastBar:SetMinMaxValues(0, 100)
-    CastBar:SetStatusBarTexture(BCDM.Media.CastBarFGTexture)
-    CastBar:SetStatusBarColor(FetchCastBarColour("player"))
+    local totalWidth = BCDM.CastBar.Status:GetWidth()
+    local cumulativePercentage = 0
 
-    CastBar.SpellName = CastBar:CreateFontString(nil, "OVERLAY")
-    CastBar.SpellName:SetFont(BCDM.Media.Font, CastBarDB.SpellName.FontSize, BCDM.db.profile.General.FontFlag)
-    CastBar.SpellName:SetPoint(CastBarDB.SpellName.Anchors[1], CastBar, CastBarDB.SpellName.Anchors[2], CastBarDB.SpellName.Anchors[3], CastBarDB.SpellName.Anchors[4])
-    CastBar.SpellName:SetText("")
-    CastBar.SpellName:SetTextColor(CastBarDB.SpellName.Colour[1], CastBarDB.SpellName.Colour[2], CastBarDB.SpellName.Colour[3], CastBarDB.SpellName.Colour[4])
-    CastBar.SpellName:SetShadowColor(GeneralDB.Shadows.Colour[1], GeneralDB.Shadows.Colour[2], GeneralDB.Shadows.Colour[3], GeneralDB.Shadows.Colour[4])
-    CastBar.SpellName:SetShadowOffset(GeneralDB.Shadows.OffsetX, GeneralDB.Shadows.OffsetY)
-
-    CastBar.Duration = CastBar:CreateFontString(nil, "OVERLAY")
-    CastBar.Duration:SetFont(BCDM.Media.Font, CastBarDB.Duration.FontSize, BCDM.db.profile.General.FontFlag)
-    CastBar.Duration:SetPoint(CastBarDB.Duration.Anchors[1], CastBar, CastBarDB.Duration.Anchors[2], CastBarDB.Duration.Anchors[3], CastBarDB.Duration.Anchors[4])
-    CastBar.Duration:SetText("")
-    CastBar.Duration:SetTextColor(CastBarDB.Duration.Colour[1], CastBarDB.Duration.Colour[2], CastBarDB.Duration.Colour[3], CastBarDB.Duration.Colour[4])
-    CastBar.Duration:SetShadowColor(GeneralDB.Shadows.Colour[1], GeneralDB.Shadows.Colour[2], GeneralDB.Shadows.Colour[3], GeneralDB.Shadows.Colour[4])
-    CastBar.Duration:SetShadowOffset(GeneralDB.Shadows.OffsetX, GeneralDB.Shadows.OffsetY)
-
-    CastBar.Icon = CastBarIcon
-
-    CastBar:SetScript("OnShow", function(self)
-        local spellName, _, icon = UnitCastingInfo("player")
-        if not spellName then spellName, _, icon = UnitChannelInfo("player") end
-        if icon then
-            self.Icon:SetTexture(icon)
-            self.Icon:Show()
-        else
-            self.Icon:Hide()
+    for i, stageProportion in ipairs(empoweredStages) do
+        if i < #empoweredStages then
+            cumulativePercentage = cumulativePercentage + stageProportion
+            local empoweredPip = BCDM.CastBar.Status:CreateTexture(nil, "OVERLAY")
+            empoweredPip:SetColorTexture(1, 1, 1, 1)
+            local xPos = totalWidth * cumulativePercentage
+            empoweredPip:SetSize(1, BCDM.CastBar.Status:GetHeight() - 2)
+            empoweredPip:SetPoint("LEFT", BCDM.CastBar.Status, "LEFT", xPos, 0)
+            table.insert(BCDM.CastBar.Pips, empoweredPip)
+            empoweredPip:Show()
         end
-    end)
+    end
+end
 
-    CastBar:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
-    CastBar:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player")
-    CastBar:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
-    CastBar:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+local function UpdateCastBarValues(self, event, unit)
+    if not BCDM.CastBar then return end
 
-    CastBar:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
-    CastBar:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player")
-
+    local EMPOWERED_CAST_START = {
+        UNIT_SPELLCAST_EMPOWER_START = true,
+    }
 
     local CAST_START = {
         UNIT_SPELLCAST_START = true,
@@ -84,111 +51,308 @@ local function CreateCastBar()
     local CAST_STOP = {
         UNIT_SPELLCAST_STOP = true,
         UNIT_SPELLCAST_CHANNEL_STOP = true,
-        PLAYER_TARGET_CHANGED = true,
         UNIT_SPELLCAST_INTERRUPTED = true,
+        UNIT_SPELLCAST_EMPOWER_STOP = true,
     }
 
     local CHANNEL_START = {
         UNIT_SPELLCAST_CHANNEL_START = true,
     }
 
-    CastBar:SetScript("OnEvent", function(self, event, unit)
-        if unit ~= "player" then return end
-        if CAST_START[event] then
-            local castDuration = UnitCastingDuration("player")
-            if not castDuration then return end
-            CastBar:SetTimerDuration(castDuration, 0)
-            CastBar.Icon:SetTexture(select(3, UnitCastingInfo("player")) or nil)
-            CastBar.SpellName:SetText(UnitCastingInfo("player") or "")
-            CastBar:SetScript("OnUpdate", function()
-                local remainingDuration = castDuration:GetRemainingDuration()
-                if remainingDuration < BCDM.db.profile.CastBar.Duration.ExpirationThreshold then
-                    CastBar.Duration:SetText(string.format("%.1f", remainingDuration))
+    if CAST_START[event] then
+        local castDuration = UnitCastingDuration("player")
+        if not castDuration then return end
+        BCDM.CastBar.Status:SetTimerDuration(castDuration, 0)
+        BCDM.CastBar.SpellNameText:SetText(string.sub(UnitCastingInfo("player") or "", 1, BCDM.db.profile.CastBar.Text.SpellName.MaxCharacters))
+        BCDM.CastBar.Icon:SetTexture(select(3, UnitCastingInfo("player")) or nil)
+        BCDM.CastBar:SetScript("OnUpdate", function()
+            local remainingDuration = castDuration:GetRemainingDuration()
+            if remainingDuration < 5 then
+                BCDM.CastBar.CastTimeText:SetText(string.format("%.1f", remainingDuration))
+            else
+                BCDM.CastBar.CastTimeText:SetText(string.format("%.0f", remainingDuration))
+            end
+            BCDM.CastBar.Status:SetValue(remainingDuration)
+        end)
+        BCDM.CastBar:Show()
+    elseif EMPOWERED_CAST_START[event] then
+		local isEmpowered = select(9, UnitChannelInfo("player"))
+        local empoweredStages = UnitEmpoweredStagePercentages("player")
+        if isEmpowered then
+            local empowerCastDuration = UnitEmpoweredChannelDuration("player")
+            CreatePips(empoweredStages)
+            BCDM.CastBar.Status:SetTimerDuration(empowerCastDuration, 0)
+            BCDM.CastBar.SpellNameText:SetText(string.sub(UnitChannelInfo("player"), 1, BCDM.db.profile.CastBar.Text.SpellName.MaxCharacters))
+            BCDM.CastBar.Icon:SetTexture(select(3, UnitChannelInfo("player")) or nil)
+            BCDM.CastBar:SetScript("OnUpdate", function()
+                local remainingDuration = empowerCastDuration:GetRemainingDuration()
+                if remainingDuration < 5 then
+                    BCDM.CastBar.CastTimeText:SetText(string.format("%.1f", remainingDuration))
                 else
-                    CastBar.Duration:SetText(string.format("%.0f", remainingDuration))
+                    BCDM.CastBar.CastTimeText:SetText(string.format("%.0f", remainingDuration))
                 end
+                BCDM.CastBar.Status:SetValue(remainingDuration)
             end)
-            CastBarContainer:Show()
-            CastBar:Show()
-        elseif CHANNEL_START[event] then
-            local channelDuration = UnitChannelDuration("player")
-            if not channelDuration then return end
-            CastBar:SetTimerDuration(channelDuration, 0)
-            CastBar:SetMinMaxValues(0, channelDuration:GetTotalDuration())
-            CastBar.SpellName:SetText(UnitChannelInfo("player") or "")
-            CastBar.Icon:SetTexture(select(3, UnitChannelInfo("player")) or nil)
-            CastBar:SetScript("OnUpdate", function()
-                local remainingDuration = channelDuration:GetRemainingDuration()
-                CastBar:SetValue(remainingDuration)
-                if remainingDuration < BCDM.db.profile.CastBar.Duration.ExpirationThreshold then
-                    CastBar.Duration:SetText(string.format("%.1f", remainingDuration))
-                else
-                    CastBar.Duration:SetText(string.format("%.0f", remainingDuration))
-                end
-            end)
-            CastBarContainer:Show()
-            CastBar:Show()
-        elseif CAST_STOP[event] then
-            CastBarContainer:Hide()
-            CastBar:Hide()
-            CastBar:SetScript("OnUpdate", nil)
+            BCDM.CastBar:Show()
         end
-    end)
-
-    BCDM.CastBar = CastBar
-    BCDM.CastBarContainer = CastBarContainer
-    CastBar:Hide()
-    CastBarContainer:Hide()
-end
-
-function BCDM:SetupCastBar()
-    CreateCastBar()
-    C_Timer.After(1, function() PlayerCastingBarFrame:UnregisterAllEvents() end)
-end
-
-function BCDM:SetCastBarHeight()
-    local CastBarDB = BCDM.db.profile.CastBar
-    if BCDM.CastBar then
-        BCDM.CastBarContainer:SetHeight(CastBarDB.Height)
-        BCDM.CastBar.Icon:SetSize(CastBarDB.Height - 2, CastBarDB.Height - 2)
+    elseif CHANNEL_START[event] then
+        local channelDuration = UnitChannelDuration("player")
+        if not channelDuration then return end
+        BCDM.CastBar.Status:SetTimerDuration(channelDuration, 0)
+        BCDM.CastBar.Status:SetMinMaxValues(0, channelDuration:GetTotalDuration())
+        BCDM.CastBar.SpellNameText:SetText(string.sub(UnitChannelInfo("player"), 1, BCDM.db.profile.CastBar.Text.SpellName.MaxCharacters))
+        BCDM.CastBar.Icon:SetTexture(select(3, UnitChannelInfo("player")) or nil)
+        BCDM.CastBar:SetScript("OnUpdate", function()
+            local remainingDuration = channelDuration:GetRemainingDuration()
+            BCDM.CastBar.Status:SetValue(remainingDuration)
+            if remainingDuration < 5 then
+                BCDM.CastBar.CastTimeText:SetText(string.format("%.1f", remainingDuration))
+            else
+                BCDM.CastBar.CastTimeText:SetText(string.format("%.0f", remainingDuration))
+            end
+            BCDM.CastBar.Status:SetValue(remainingDuration)
+        end)
+        BCDM.CastBar:Show()
+    elseif CAST_STOP[event] then
+        BCDM.CastBar:Hide()
+        BCDM.CastBar:SetScript("OnUpdate", nil)
+        for _, pip in ipairs(BCDM.CastBar.Pips) do pip:Hide() pip:SetParent(nil) end
     end
 end
 
-function BCDM:SetCastBarWidth()
+local function SetHooks()
+    hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() if InCombatLockdown() then return end  BCDM:UpdateCastBarWidth() end)
+    hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() if InCombatLockdown() then return end  BCDM:UpdateCastBarWidth() end)
+end
+
+function BCDM:CreateCastBar()
+    local GeneralDB = BCDM.db.profile.General
     local CastBarDB = BCDM.db.profile.CastBar
-    if BCDM.CastBar then
-        local powerBarAnchor = _G[CastBarDB.Anchors[2]] == _G["BCDM_PowerBar"] or _G[CastBarDB.Anchors[2]] == _G["BCDM_SecondaryPowerBar"]
-        local castBarWidth = (powerBarAnchor and _G[CastBarDB.Anchors[2]]:GetWidth()) or _G[CastBarDB.Anchors[2]]:GetWidth() + 2
-        BCDM.CastBar:SetWidth(castBarWidth)
-        BCDM.CastBarContainer:SetWidth(castBarWidth)
+
+    SetHooks()
+
+    local CastBar = CreateFrame("Frame", "BCDM_CastBar", UIParent, "BackdropTemplate")
+
+    CastBar.Pips = {}
+
+    CastBar:SetBackdrop(BCDM.BACKDROP)
+    CastBar:SetBackdropColor(CastBarDB.BackgroundColour[1], CastBarDB.BackgroundColour[2], CastBarDB.BackgroundColour[3], CastBarDB.BackgroundColour[4])
+    CastBar:SetBackdropBorderColor(0, 0, 0, 1)
+    CastBar:SetSize(CastBarDB.Width, CastBarDB.Height)
+    CastBar:SetPoint(CastBarDB.Layout[1], _G[CastBarDB.Layout[2]], CastBarDB.Layout[3], CastBarDB.Layout[4], CastBarDB.Layout[5])
+    CastBar:SetFrameStrata("MEDIUM")
+
+    if CastBarDB.MatchWidthOfAnchor then
+        local anchorFrame = _G[CastBarDB.Layout[2]]
+        if anchorFrame then
+            C_Timer.After(0.1, function() local anchorWidth = anchorFrame:GetWidth() CastBar:SetWidth(anchorWidth) end)
+        end
+    end
+
+    CastBar.Icon = CastBar:CreateTexture(nil, "OVERLAY")
+    CastBar.Icon:SetSize(CastBarDB.Height, CastBarDB.Height)
+    local iconZoom = BCDM.db.profile.CooldownManager.General.IconZoom * 0.5
+    CastBar.Icon:SetTexCoord(iconZoom, 1 - iconZoom, iconZoom, 1 - iconZoom)
+
+    CastBar.Status = CreateFrame("StatusBar", nil, CastBar)
+    CastBar.Status:SetStatusBarTexture(BCDM.Media.Foreground)
+    CastBar.Status:SetStatusBarColor(FetchCastBarColour())
+    CastBar.Status:SetMinMaxValues(0, UnitPowerMax("player"))
+    CastBar.Status:SetValue(UnitPower("player"))
+
+    if CastBarDB.Icon.Enabled == false then
+        CastBar.Status:SetPoint("TOPLEFT", CastBar, "TOPLEFT", 1, -1)
+        CastBar.Status:SetPoint("BOTTOMRIGHT", CastBar, "BOTTOMRIGHT", -1, 1)
+    elseif CastBarDB.Icon.Layout == "LEFT" then
+        CastBar.Icon:SetPoint("TOPLEFT", CastBar, "TOPLEFT", 1, -1)
+        CastBar.Icon:SetPoint("BOTTOMLEFT", CastBar, "BOTTOMLEFT", 1, 1)
+        CastBar.Status:SetPoint("TOPLEFT", CastBar.Icon, "TOPRIGHT", 0, 0)
+        CastBar.Status:SetPoint("BOTTOMRIGHT", CastBar, "BOTTOMRIGHT", -1, 1)
+    elseif CastBarDB.Icon.Layout == "RIGHT" then
+        CastBar.Icon:SetPoint("TOPRIGHT", CastBar, "TOPRIGHT", -1, -1)
+        CastBar.Icon:SetPoint("BOTTOMRIGHT", CastBar, "BOTTOMRIGHT", -1, 1)
+        CastBar.Status:SetPoint("TOPLEFT", CastBar, "TOPLEFT", 1, -1)
+        CastBar.Status:SetPoint("BOTTOMRIGHT", CastBar.Icon, "BOTTOMLEFT", 0, 0)
+    end
+
+    CastBar.SpellNameText = CastBar.Status:CreateFontString(nil, "OVERLAY")
+    CastBar.SpellNameText:SetFont(BCDM.Media.Font, CastBarDB.Text.SpellName.FontSize, GeneralDB.Fonts.FontFlag)
+    CastBar.SpellNameText:SetTextColor(CastBarDB.Text.SpellName.Colour[1], CastBarDB.Text.SpellName.Colour[2], CastBarDB.Text.SpellName.Colour[3], 1)
+    CastBar.SpellNameText:SetPoint(CastBarDB.Text.SpellName.Layout[1], CastBar.Status, CastBarDB.Text.SpellName.Layout[2], CastBarDB.Text.SpellName.Layout[3], CastBarDB.Text.SpellName.Layout[4])
+    if GeneralDB.Fonts.Shadow.Enabled then
+        CastBar.SpellNameText:SetShadowColor(GeneralDB.Fonts.Shadow.Colour[1], GeneralDB.Fonts.Shadow.Colour[2], GeneralDB.Fonts.Shadow.Colour[3], GeneralDB.Fonts.Shadow.Colour[4])
+        CastBar.SpellNameText:SetShadowOffset(GeneralDB.Fonts.Shadow.OffsetX, GeneralDB.Fonts.Shadow.OffsetY)
+    else
+        CastBar.SpellNameText:SetShadowColor(0, 0, 0, 0)
+        CastBar.SpellNameText:SetShadowOffset(0, 0)
+    end
+    CastBar.SpellNameText:SetText("")
+
+    CastBar.CastTimeText = CastBar.Status:CreateFontString(nil, "OVERLAY")
+    CastBar.CastTimeText:SetFont(BCDM.Media.Font, CastBarDB.Text.CastTime.FontSize, GeneralDB.Fonts.FontFlag)
+    CastBar.CastTimeText:SetTextColor(CastBarDB.Text.CastTime.Colour[1], CastBarDB.Text.CastTime.Colour[2], CastBarDB.Text.CastTime.Colour[3], 1)
+    CastBar.CastTimeText:SetPoint(CastBarDB.Text.CastTime.Layout[1], CastBar.Status, CastBarDB.Text.CastTime.Layout[2], CastBarDB.Text.CastTime.Layout[3], CastBarDB.Text.CastTime.Layout[4])
+    if GeneralDB.Fonts.Shadow.Enabled then
+        CastBar.CastTimeText:SetShadowColor(GeneralDB.Fonts.Shadow.Colour[1], GeneralDB.Fonts.Shadow.Colour[2], GeneralDB.Fonts.Shadow.Colour[3], GeneralDB.Fonts.Shadow.Colour[4])
+        CastBar.CastTimeText:SetShadowOffset(GeneralDB.Fonts.Shadow.OffsetX, GeneralDB.Fonts.Shadow.OffsetY)
+    else
+        CastBar.CastTimeText:SetShadowColor(0, 0, 0, 0)
+        CastBar.CastTimeText:SetShadowOffset(0, 0)
+    end
+    CastBar.CastTimeText:SetText("")
+
+    BCDM.CastBar = CastBar
+
+    if CastBarDB.Enabled then
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player")
+
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", "player")
+
+        CastBar:SetScript("OnEvent", UpdateCastBarValues)
+
+        if CastBarDB.Icon.Enabled then CastBar.Icon:Show() else CastBar.Icon:Hide() end
+
+        CastBar:Hide()
+    else
+        CastBar:Hide()
+        CastBar:SetScript("OnEvent", nil)
+        CastBar:UnregisterAllEvents()
     end
 end
 
 function BCDM:UpdateCastBar()
     local GeneralDB = BCDM.db.profile.General
     local CastBarDB = BCDM.db.profile.CastBar
-    if BCDM.CastBar then
-        BCDM:ResolveMedia()
-        BCDM.CastBarContainer:ClearAllPoints()
-        BCDM.CastBarContainer:SetPoint(CastBarDB.Anchors[1], CastBarDB.Anchors[2], CastBarDB.Anchors[3], CastBarDB.Anchors[4], CastBarDB.Anchors[5])
-        BCDM.CastBarContainer:SetBackdrop({bgFile = BCDM.Media.CastBarBGTexture, edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
-        BCDM.CastBarContainer:SetBackdropColor(unpack(CastBarDB.BGColour))
-        BCDM.CastBarContainer:SetBackdropBorderColor(0, 0, 0, 1)
-        BCDM.CastBar:SetStatusBarTexture(BCDM.Media.CastBarFGTexture)
-        BCDM.CastBar:SetStatusBarColor(FetchCastBarColour("player"))
-        BCDM.CastBar.SpellName:ClearAllPoints()
-        BCDM.CastBar.SpellName:SetPoint(CastBarDB.SpellName.Anchors[1], BCDM.CastBar, CastBarDB.SpellName.Anchors[2], CastBarDB.SpellName.Anchors[3], CastBarDB.SpellName.Anchors[4])
-        BCDM.CastBar.SpellName:SetFont(BCDM.Media.Font, CastBarDB.SpellName.FontSize, BCDM.db.profile.General.FontFlag)
-        BCDM.CastBar.SpellName:SetTextColor(CastBarDB.SpellName.Colour[1], CastBarDB.SpellName.Colour[2], CastBarDB.SpellName.Colour[3], CastBarDB.SpellName.Colour[4])
-        BCDM.CastBar.SpellName:SetShadowColor(GeneralDB.Shadows.Colour[1], GeneralDB.Shadows.Colour[2], GeneralDB.Shadows.Colour[3], GeneralDB.Shadows.Colour[4])
-        BCDM.CastBar.SpellName:SetShadowOffset(GeneralDB.Shadows.OffsetX, GeneralDB.Shadows.OffsetY)
-        BCDM.CastBar.Duration:ClearAllPoints()
-        BCDM.CastBar.Duration:SetPoint(CastBarDB.Duration.Anchors[1], BCDM.CastBar, CastBarDB.Duration.Anchors[2], CastBarDB.Duration.Anchors[3], CastBarDB.Duration.Anchors[4])
-        BCDM.CastBar.Duration:SetFont(BCDM.Media.Font, CastBarDB.Duration.FontSize, BCDM.db.profile.General.FontFlag)
-        BCDM.CastBar.Duration:SetTextColor(CastBarDB.Duration.Colour[1], CastBarDB.Duration.Colour[2], CastBarDB.Duration.Colour[3], CastBarDB.Duration.Colour[4])
-        BCDM.CastBar.Duration:SetShadowColor(GeneralDB.Shadows.Colour[1], GeneralDB.Shadows.Colour[2], GeneralDB.Shadows.Colour[3], GeneralDB.Shadows.Colour[4])
-        BCDM.CastBar.Duration:SetShadowOffset(GeneralDB.Shadows.OffsetX, GeneralDB.Shadows.OffsetY)
-        BCDM:SetCastBarHeight()
-        BCDM:SetCastBarWidth()
+    local CastBar = BCDM.CastBar
+    if not CastBar then return end
+
+    BCDM.CastBar:SetBackdropColor(CastBarDB.BackgroundColour[1], CastBarDB.BackgroundColour[2], CastBarDB.BackgroundColour[3], CastBarDB.BackgroundColour[4])
+    BCDM.CastBar:SetSize(CastBarDB.Width, CastBarDB.Height)
+    BCDM.CastBar:ClearAllPoints()
+    BCDM.CastBar:SetPoint(CastBarDB.Layout[1], _G[CastBarDB.Layout[2]], CastBarDB.Layout[3], CastBarDB.Layout[4], CastBarDB.Layout[5])
+
+    BCDM.CastBar.Status:SetStatusBarColor(FetchCastBarColour())
+
+    if CastBarDB.MatchWidthOfAnchor then
+        local anchorFrame = _G[CastBarDB.Layout[2]]
+        if anchorFrame then
+            C_Timer.After(0.1, function() local anchorWidth = anchorFrame:GetWidth() CastBar:SetWidth(anchorWidth) end)
+        end
+    end
+
+    CastBar.Icon:SetSize(CastBarDB.Height, CastBarDB.Height)
+    local iconZoom = BCDM.db.profile.CooldownManager.General.IconZoom * 0.5
+    CastBar.Icon:SetTexCoord(iconZoom, 1 - iconZoom, iconZoom, 1 - iconZoom)
+
+    CastBar.Icon:ClearAllPoints()
+    if CastBarDB.Icon.Enabled == false then
+        CastBar.Status:SetPoint("TOPLEFT", CastBar, "TOPLEFT", 1, -1)
+        CastBar.Status:SetPoint("BOTTOMRIGHT", CastBar, "BOTTOMRIGHT", -1, 1)
+    elseif CastBarDB.Icon.Layout == "LEFT" then
+        CastBar.Icon:SetPoint("TOPLEFT", CastBar, "TOPLEFT", 1, -1)
+        CastBar.Icon:SetPoint("BOTTOMLEFT", CastBar, "BOTTOMLEFT", 1, 1)
+        CastBar.Status:SetPoint("TOPLEFT", CastBar.Icon, "TOPRIGHT", 0, 0)
+        CastBar.Status:SetPoint("BOTTOMRIGHT", CastBar, "BOTTOMRIGHT", -1, 1)
+    elseif CastBarDB.Icon.Layout == "RIGHT" then
+        CastBar.Icon:SetPoint("TOPRIGHT", CastBar, "TOPRIGHT", -1, -1)
+        CastBar.Icon:SetPoint("BOTTOMRIGHT", CastBar, "BOTTOMRIGHT", -1, 1)
+        CastBar.Status:SetPoint("TOPLEFT", CastBar, "TOPLEFT", 1, -1)
+        CastBar.Status:SetPoint("BOTTOMRIGHT", CastBar.Icon, "BOTTOMLEFT", 0, 0)
+    end
+
+    CastBar.SpellNameText:SetFont(BCDM.Media.Font, CastBarDB.Text.SpellName.FontSize, BCDM.db.profile.General.Fonts.FontFlag)
+    CastBar.SpellNameText:SetTextColor(CastBarDB.Text.SpellName.Colour[1], CastBarDB.Text.SpellName.Colour[2], CastBarDB.Text.SpellName.Colour[3], 1)
+    CastBar.SpellNameText:ClearAllPoints()
+    CastBar.SpellNameText:SetPoint(CastBarDB.Text.SpellName.Layout[1], CastBar.Status, CastBarDB.Text.SpellName.Layout[2], CastBarDB.Text.SpellName.Layout[3], CastBarDB.Text.SpellName.Layout[4])
+    if GeneralDB.Fonts.Shadow.Enabled then
+        CastBar.SpellNameText:SetShadowColor(GeneralDB.Fonts.Shadow.Colour[1], GeneralDB.Fonts.Shadow.Colour[2], GeneralDB.Fonts.Shadow.Colour[3], GeneralDB.Fonts.Shadow.Colour[4])
+        CastBar.SpellNameText:SetShadowOffset(GeneralDB.Fonts.Shadow.OffsetX, GeneralDB.Fonts.Shadow.OffsetY)
+    else
+        CastBar.SpellNameText:SetShadowColor(0, 0, 0, 0)
+        CastBar.SpellNameText:SetShadowOffset(0, 0)
+    end
+
+    CastBar.CastTimeText:SetFont(BCDM.Media.Font, CastBarDB.Text.CastTime.FontSize, BCDM.db.profile.General.Fonts.FontFlag)
+    CastBar.CastTimeText:SetTextColor(CastBarDB.Text.CastTime.Colour[1], CastBarDB.Text.CastTime.Colour[2], CastBarDB.Text.CastTime.Colour[3], 1)
+    CastBar.CastTimeText:ClearAllPoints()
+    CastBar.CastTimeText:SetPoint(CastBarDB.Text.CastTime.Layout[1], CastBar.Status, CastBarDB.Text.CastTime.Layout[2], CastBarDB.Text.CastTime.Layout[3], CastBarDB.Text.CastTime.Layout[4])
+    if GeneralDB.Fonts.Shadow.Enabled then
+        CastBar.CastTimeText:SetShadowColor(GeneralDB.Fonts.Shadow.Colour[1], GeneralDB.Fonts.Shadow.Colour[2], GeneralDB.Fonts.Shadow.Colour[3], GeneralDB.Fonts.Shadow.Colour[4])
+        CastBar.CastTimeText:SetShadowOffset(GeneralDB.Fonts.Shadow.OffsetX, GeneralDB.Fonts.Shadow.OffsetY)
+    else
+        CastBar.CastTimeText:SetShadowColor(0, 0, 0, 0)
+        CastBar.CastTimeText:SetShadowOffset(0, 0)
+    end
+
+    if CastBarDB.Enabled then
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player")
+
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", "player")
+        CastBar:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", "player")
+
+        CastBar:SetScript("OnEvent", UpdateCastBarValues)
+
+        if CastBarDB.Icon.Enabled then CastBar.Icon:Show() else CastBar.Icon:Hide() end
+
+        CastBar:Hide()
+    else
+        CastBar:Hide()
+        CastBar:SetScript("OnEvent", nil)
+        CastBar:UnregisterAllEvents()
+    end
+    if BCDM.CAST_BAR_TEST_MODE then BCDM:CreateTestCastBar() end
+end
+
+function BCDM:CreateTestCastBar()
+    local CastBarDB = BCDM.db.profile.CastBar
+    if not BCDM.CastBar then return end
+    if BCDM.CAST_BAR_TEST_MODE then
+        BCDM.CastBar.SpellNameText:SetText(string.sub("Ethereal Portal", 1, BCDM.db.profile.CastBar.Text.SpellName.MaxCharacters))
+        BCDM.CastBar.Icon:SetTexture("Interface\\Icons\\ability_mage_netherwindpresence")
+        BCDM.CastBar.Status:SetMinMaxValues(0, 10)
+        BCDM.CastBar.Status:SetValue(5)
+        BCDM.CastBar.CastTimeText:SetText("5.0")
+        BCDM.CastBar.Icon:ClearAllPoints()
+        if CastBarDB.Icon.Enabled == false then
+            BCDM.CastBar.Status:SetPoint("TOPLEFT", BCDM.CastBar, "TOPLEFT", 1, -1)
+            BCDM.CastBar.Status:SetPoint("BOTTOMRIGHT", BCDM.CastBar, "BOTTOMRIGHT", -1, 1)
+        elseif CastBarDB.Icon.Layout == "LEFT" then
+            BCDM.CastBar.Icon:SetPoint("TOPLEFT", BCDM.CastBar, "TOPLEFT", 1, -1)
+            BCDM.CastBar.Icon:SetPoint("BOTTOMLEFT", BCDM.CastBar, "BOTTOMLEFT", 1, 1)
+            BCDM.CastBar.Status:SetPoint("TOPLEFT", BCDM.CastBar.Icon, "TOPRIGHT", 0, 0)
+            BCDM.CastBar.Status:SetPoint("BOTTOMRIGHT", BCDM.CastBar, "BOTTOMRIGHT", -1, 1)
+        elseif CastBarDB.Icon.Layout == "RIGHT" then
+            BCDM.CastBar.Icon:SetPoint("TOPRIGHT", BCDM.CastBar, "TOPRIGHT", -1, -1)
+            BCDM.CastBar.Icon:SetPoint("BOTTOMRIGHT", BCDM.CastBar, "BOTTOMRIGHT", -1, 1)
+            BCDM.CastBar.Status:SetPoint("TOPLEFT", BCDM.CastBar, "TOPLEFT", 1, -1)
+            BCDM.CastBar.Status:SetPoint("BOTTOMRIGHT", BCDM.CastBar.Icon, "BOTTOMLEFT", 0, 0)
+        end
+        if CastBarDB.Enabled then BCDM.CastBar:Show() else BCDM.CastBar:Hide() end
+    else
+        BCDM.CastBar:Hide()
+    end
+end
+
+function BCDM:UpdateCastBarWidth()
+    local CastBarDB = BCDM.db.profile.CastBar
+    local CastBar = BCDM.CastBar
+    if CastBarDB.Enabled and CastBarDB.MatchWidthOfAnchor then
+        local anchorFrame = _G[CastBarDB.Layout[2]]
+        if anchorFrame then
+            C_Timer.After(0.2, function() local anchorWidth = anchorFrame:GetWidth() CastBar:SetWidth(anchorWidth) end)
+        end
     end
 end

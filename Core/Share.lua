@@ -3,13 +3,11 @@ local Serialize = LibStub:GetLibrary("AceSerializer-3.0")
 local Compress = LibStub:GetLibrary("LibDeflate")
 
 function BCDM:ExportSavedVariables()
-    local profileData = {
-        profile = BCDM.db.profile,
-    }
+    local profileData = { profile = BCDM.db.profile, }
     local SerializedInfo = Serialize:Serialize(profileData)
     local CompressedInfo = Compress:CompressDeflate(SerializedInfo)
     local EncodedInfo = Compress:EncodeForPrint(CompressedInfo)
-    EncodedInfo = "!BCDM"..EncodedInfo
+    EncodedInfo = "!BCDM_"..EncodedInfo
     return EncodedInfo
 end
 
@@ -17,10 +15,7 @@ function BCDM:ImportSavedVariables(EncodedInfo, profileName)
     local DecodedInfo = Compress:DecodeForPrint(EncodedInfo:sub(6))
     local DecompressedInfo = Compress:DecompressDeflate(DecodedInfo)
     local success, data = Serialize:Deserialize(DecompressedInfo)
-    if not success or type(data) ~= "table" or EncodedInfo:sub(1, 5) ~= "!BCDM" then
-        BCDM:Print("Invalid Import String.")
-        return
-    end
+    if not success or type(data) ~= "table" or EncodedInfo:sub(1, 5) ~= "!BCDM_" then print("|cFF8080FFUnhalted|r Unit Frames: Invalid Import String.") return end
 
     if profileName then
         BCDM.db:SetProfile(profileName)
@@ -33,7 +28,8 @@ function BCDM:ImportSavedVariables(EncodedInfo, profileName)
         end
 
         BCDMG.RefreshProfiles()
-        BCDM:UpdateBCDM()
+
+        UIParent:SetScale(BCDM.db.profile.General.UIScale or 1)
     else
         StaticPopupDialogs["BCDM_IMPORT_NEW_PROFILE"] = {
             text = BCDM.AddOnName.." - ".."Profile Name?",
@@ -59,7 +55,8 @@ function BCDM:ImportSavedVariables(EncodedInfo, profileName)
                 end
 
                 BCDMG.RefreshProfiles()
-                BCDM:UpdateBCDM()
+
+                UIParent:SetScale(BCDM.db.profile.General.UIScale or 1)
 
             end,
         }
@@ -72,26 +69,21 @@ function BCDMG:ExportBCDM(profileKey)
     local profile = BCDM.db.profiles[profileKey]
     if not profile then return nil end
 
-    local profileData = {
-        profile = profile,
-    }
+    local profileData = { profile = profile, }
 
     local SerializedInfo = Serialize:Serialize(profileData)
     local CompressedInfo = Compress:CompressDeflate(SerializedInfo)
     local EncodedInfo = Compress:EncodeForPrint(CompressedInfo)
-    EncodedInfo = "!BCDM" .. EncodedInfo
+    EncodedInfo = "!BCDM_" .. EncodedInfo
     return EncodedInfo
 end
 
 function BCDMG:ImportBCDM(importString, profileKey)
-    local DecodedInfo = Compress:DecodeForPrint(importString:sub(5))
+    local DecodedInfo = Compress:DecodeForPrint(importString:sub(6))
     local DecompressedInfo = Compress:DecompressDeflate(DecodedInfo)
     local success, profileData = Serialize:Deserialize(DecompressedInfo)
 
-    if not success or type(profileData) ~= "table" then
-        BCDM:Print("Invalid Import String.")
-        return
-    end
+    if not success or type(profileData) ~= "table" then print("|cFF8080FFUnhalted|r Unit Frames: Invalid Import String.") return end
 
     if type(profileData.profile) == "table" then
         BCDM.db.profiles[profileKey] = profileData.profile

@@ -1,118 +1,169 @@
 local _, BCDM = ...
 
-local function FetchPowerBarColour(unit)
+local function FetchPowerBarColour()
     local CooldownManagerDB = BCDM.db.profile
     local GeneralDB = CooldownManagerDB.General
     local PowerBarDB = CooldownManagerDB.PowerBar
     if PowerBarDB then
-        if PowerBarDB.ColourByPower then
-            local powerType = UnitPowerType(unit)
-            local powerColour = GeneralDB.CustomColours.PrimaryPower[powerType]
-            if powerColour then return GeneralDB.CustomColours.PrimaryPower[powerType][1], GeneralDB.CustomColours.PrimaryPower[powerType][2], GeneralDB.CustomColours.PrimaryPower[powerType][3], GeneralDB.CustomColours.PrimaryPower[powerType][4] or 1 end
+        if PowerBarDB.ColourByType then
+            local powerType = UnitPowerType("player")
+            local powerColour = GeneralDB.Colours.PrimaryPower[powerType]
+            if powerColour then return GeneralDB.Colours.PrimaryPower[powerType][1], GeneralDB.Colours.PrimaryPower[powerType][2], GeneralDB.Colours.PrimaryPower[powerType][3], GeneralDB.Colours.PrimaryPower[powerType][4] or 1 end
+        elseif PowerBarDB.ColourByClass then
+            local _, class = UnitClass("player")
+            local classColour = RAID_CLASS_COLORS[class]
+            if classColour then return classColour.r, classColour.g, classColour.b, 1 end
+        else
+            return PowerBarDB.ForegroundColour[1], PowerBarDB.ForegroundColour[2], PowerBarDB.ForegroundColour[3], PowerBarDB.ForegroundColour[4]
         end
-        return PowerBarDB.FGColour[1], PowerBarDB.FGColour[2], PowerBarDB.FGColour[3], PowerBarDB.FGColour[4]
     end
 end
 
-local function FetchPowerTextColour(unit)
-    local CooldownManagerDB = BCDM.db.profile
-    local GeneralDB = CooldownManagerDB.General
-    local PowerBarDB = CooldownManagerDB.PowerBar
-    if PowerBarDB then
-        if PowerBarDB.Text.ColourByPower then
-            local powerType = UnitPowerType(unit)
-            local powerColour = GeneralDB.CustomColours.PrimaryPower[powerType]
-            if powerColour then return GeneralDB.CustomColours.PrimaryPower[powerType][1], GeneralDB.CustomColours.PrimaryPower[powerType][2], GeneralDB.CustomColours.PrimaryPower[powerType][3], GeneralDB.CustomColours.PrimaryPower[powerType][4] or 1 end
+local function NudgePowerBar(powerBar, xOffset, yOffset)
+    local powerBarFrame = _G[powerBar]
+    if not powerBarFrame then return end
+    local point, relativeTo, relativePoint, xOfs, yOfs = powerBarFrame:GetPoint(1)
+    powerBarFrame:ClearAllPoints()
+    powerBarFrame:SetPoint(point, relativeTo, relativePoint, xOfs + xOffset, yOfs + yOffset)
+end
+
+local function UpdatePowerValues()
+    local powerCurrent = UnitPower("player")
+    local powerType = UnitPowerType("player")
+    local PowerBar = BCDM.PowerBar
+    if PowerBar and PowerBar.Status then
+        PowerBar.Status:SetValue(powerCurrent)
+        if powerType == 0 then
+            PowerBar.Text:SetText(string.format("%.0f%%", UnitPowerPercent("player", 0, false, CurveConstants.ScaleTo100)))
+        else
+            PowerBar.Text:SetText(tostring(powerCurrent))
         end
-        return PowerBarDB.Text.Colour[1], PowerBarDB.Text.Colour[2], PowerBarDB.Text.Colour[3], PowerBarDB.Text.Colour[4]
+        PowerBar.Status:SetStatusBarColor(FetchPowerBarColour())
     end
 end
 
-local function CreatePowerBar()
-    local CooldownManagerDB = BCDM.db.profile
-    local PowerBarDB = CooldownManagerDB.PowerBar
+local function SetHooks()
+    hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() if InCombatLockdown() then return end  BCDM:UpdatePowerBarWidth() end)
+    hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() if InCombatLockdown() then return end  BCDM:UpdatePowerBarWidth() end)
+end
+
+function BCDM:CreatePowerBar()
+    local GeneralDB = BCDM.db.profile.General
+    local PowerBarDB = BCDM.db.profile.PowerBar
+
+    SetHooks()
+
     local PowerBar = CreateFrame("Frame", "BCDM_PowerBar", UIParent, "BackdropTemplate")
-    PowerBar:SetSize(220, PowerBarDB.Height)
-    PowerBar:SetPoint(PowerBarDB.Anchors[1], PowerBarDB.Anchors[2], PowerBarDB.Anchors[3], PowerBarDB.Anchors[4], PowerBarDB.Anchors[5])
-    PowerBar:SetBackdrop({bgFile = BCDM.Media.PowerBarBGTexture, edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
-    PowerBar:SetBackdropColor(unpack(PowerBarDB.BGColour))
-    PowerBar:SetBackdropBorderColor(0, 0, 0, 1)
-    PowerBar:SetFrameStrata("MEDIUM")
-    PowerBar.StatusBar = CreateFrame("StatusBar", "BCDM_PowerBar_StatusBar", PowerBar)
-    PowerBar.StatusBar:SetPoint("TOPLEFT", PowerBar, "TOPLEFT", 1, -1)
-    PowerBar.StatusBar:SetPoint("BOTTOMRIGHT", PowerBar, "BOTTOMRIGHT", -1, 1)
-    PowerBar.StatusBar:SetMinMaxValues(0, 100)
-    PowerBar.StatusBar:SetStatusBarTexture(BCDM.Media.PowerBarFGTexture)
-    PowerBar.StatusBar.Value = PowerBar.StatusBar:CreateFontString(nil, "OVERLAY")
-    PowerBar.StatusBar.Value:SetFont(BCDM.Media.Font, PowerBarDB.Text.FontSize, BCDM.db.profile.General.FontFlag)
-    PowerBar.StatusBar.Value:SetTextColor(FetchPowerTextColour("player"))
-    PowerBar.StatusBar.Value:SetPoint(PowerBarDB.Text.Anchors[1], PowerBar.StatusBar, PowerBarDB.Text.Anchors[2], PowerBarDB.Text.Anchors[3], PowerBarDB.Text.Anchors[4])
-    PowerBar.StatusBar.Value:SetText("")
-    PowerBar.StatusBar.Value:SetShadowColor(BCDM.db.profile.General.Shadows.Colour[1], BCDM.db.profile.General.Shadows.Colour[2], BCDM.db.profile.General.Shadows.Colour[3], BCDM.db.profile.General.Shadows.Colour[4])
-    PowerBar.StatusBar.Value:SetShadowOffset(BCDM.db.profile.General.Shadows.OffsetX, BCDM.db.profile.General.Shadows.OffsetY)
-    PowerBar.StatusBar.Value:SetDrawLayer("OVERLAY", 7)
 
-    local function UpdatePowerBar()
-        local powerType, powerToken = UnitPowerType("player")
-        local isMana = (powerType == 0)
-        local current = UnitPower("player", powerType)
-        local max = UnitPowerMax("player", powerType)
-        if max > 0 then
-            PowerBar.StatusBar:SetMinMaxValues(0, max)
-            PowerBar.StatusBar:SetValue(current)
-            PowerBar.StatusBar.Value:SetText(isMana and string.format("%.0f%%", UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)) or current)
-            PowerBar.StatusBar:SetStatusBarColor(FetchPowerBarColour("player"))
+    PowerBar:SetBackdrop(BCDM.BACKDROP)
+    PowerBar:SetBackdropColor(PowerBarDB.BackgroundColour[1], PowerBarDB.BackgroundColour[2], PowerBarDB.BackgroundColour[3], PowerBarDB.BackgroundColour[4])
+    PowerBar:SetBackdropBorderColor(0, 0, 0, 1)
+    PowerBar:SetSize(PowerBarDB.Width, PowerBarDB.Height)
+    PowerBar:SetPoint(PowerBarDB.Layout[1], _G[PowerBarDB.Layout[2]], PowerBarDB.Layout[3], PowerBarDB.Layout[4], PowerBarDB.Layout[5])
+    PowerBar:SetFrameStrata("MEDIUM")
+
+    if PowerBarDB.MatchWidthOfAnchor then
+        local anchorFrame = _G[PowerBarDB.Layout[2]]
+        if anchorFrame then
+            C_Timer.After(0.1, function() local anchorWidth = anchorFrame:GetWidth() PowerBar:SetWidth(anchorWidth) end)
         end
     end
 
-    PowerBar:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
-    PowerBar:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
-    PowerBar:RegisterUnitEvent("UNIT_MAXPOWER", "player")
-    PowerBar:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player")
-    PowerBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-    PowerBar:SetScript("OnEvent", function(self, event, ...) UpdatePowerBar() end)
+    PowerBar.Status = CreateFrame("StatusBar", nil, PowerBar)
+    PowerBar.Status:SetPoint("TOPLEFT", PowerBar, "TOPLEFT", 1, -1)
+    PowerBar.Status:SetPoint("BOTTOMRIGHT", PowerBar, "BOTTOMRIGHT", -1, 1)
+    PowerBar.Status:SetStatusBarTexture(BCDM.Media.Foreground)
+    PowerBar.Status:SetStatusBarColor(FetchPowerBarColour())
+    PowerBar.Status:SetMinMaxValues(0, UnitPowerMax("player"))
+    PowerBar.Status:SetValue(UnitPower("player"))
 
-    C_Timer.After(0.1, UpdatePowerBar)
+    PowerBar.Text = PowerBar.Status:CreateFontString(nil, "OVERLAY")
+    PowerBar.Text:SetFont(BCDM.Media.Font, PowerBarDB.Text.FontSize, GeneralDB.Fonts.FontFlag)
+    PowerBar.Text:SetTextColor(PowerBarDB.Text.Colour[1], PowerBarDB.Text.Colour[2], PowerBarDB.Text.Colour[3], 1)
+    PowerBar.Text:SetPoint(PowerBarDB.Text.Layout[1], PowerBar, PowerBarDB.Text.Layout[2], PowerBarDB.Text.Layout[3], PowerBarDB.Text.Layout[4])
+    if GeneralDB.Fonts.Shadow.Enabled then
+        PowerBar.Text:SetShadowColor(GeneralDB.Fonts.Shadow.Colour[1], GeneralDB.Fonts.Shadow.Colour[2], GeneralDB.Fonts.Shadow.Colour[3], GeneralDB.Fonts.Shadow.Colour[4])
+        PowerBar.Text:SetShadowOffset(GeneralDB.Fonts.Shadow.OffsetX, GeneralDB.Fonts.Shadow.OffsetY)
+    else
+        PowerBar.Text:SetShadowColor(0, 0, 0, 0)
+        PowerBar.Text:SetShadowOffset(0, 0)
+    end
+    PowerBar.Text:SetText("")
+    if PowerBarDB.Text.Enabled then PowerBar.Text:Show() else PowerBar.Text:Hide() end
 
     BCDM.PowerBar = PowerBar
-end
 
-function BCDM:SetPowerBarWidth()
-    local PowerBarDB = BCDM.db.profile.PowerBar
-    if BCDM.PowerBar then
-        local powerBarWidth = _G[PowerBarDB.Anchors[2]]:GetWidth() + 2
-        BCDM.PowerBar:SetWidth(powerBarWidth)
+    if PowerBarDB.Enabled then
+        PowerBar:RegisterEvent("UNIT_POWER_UPDATE")
+        PowerBar:RegisterEvent("UNIT_MAXPOWER")
+        PowerBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+        PowerBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
+        if PowerBarDB.FrequentUpdates then PowerBar:RegisterEvent("UNIT_POWER_FREQUENT") else PowerBar:UnregisterEvent("UNIT_POWER_FREQUENT") end
+        PowerBar:SetScript("OnEvent", UpdatePowerValues)
+        NudgePowerBar("BCDM_PowerBar", -0.1, 0)
+    else
+        PowerBar:Hide()
+        PowerBar:SetScript("OnEvent", nil)
+        PowerBar:UnregisterAllEvents()
     end
-end
-
-function BCDM:SetPowerBarHeight()
-    if BCDM.PowerBar then
-        BCDM.PowerBar:SetHeight(BCDM.db.profile.PowerBar.Height)
-    end
-end
-
-function BCDM:SetupPowerBar()
-    CreatePowerBar()
 end
 
 function BCDM:UpdatePowerBar()
+    local GeneralDB = BCDM.db.profile.General
     local PowerBarDB = BCDM.db.profile.PowerBar
-    if BCDM.PowerBar then
-        BCDM:ResolveMedia()
-        BCDM.PowerBar:ClearAllPoints()
-        BCDM.PowerBar:SetPoint(PowerBarDB.Anchors[1], PowerBarDB.Anchors[2], PowerBarDB.Anchors[3], PowerBarDB.Anchors[4], PowerBarDB.Anchors[5])
-        BCDM.PowerBar:SetBackdrop({bgFile = BCDM.Media.PowerBarBGTexture, edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
-        BCDM.PowerBar:SetBackdropColor(unpack(PowerBarDB.BGColour))
-        BCDM.PowerBar:SetBackdropBorderColor(0, 0, 0, 1)
-        BCDM.PowerBar.StatusBar:SetStatusBarTexture(BCDM.Media.PowerBarFGTexture)
-        BCDM.PowerBar.StatusBar:SetStatusBarColor(FetchPowerBarColour("player"))
-        BCDM.PowerBar.StatusBar.Value:ClearAllPoints()
-        BCDM.PowerBar.StatusBar.Value:SetPoint(PowerBarDB.Text.Anchors[1], BCDM.PowerBar.StatusBar, PowerBarDB.Text.Anchors[2], PowerBarDB.Text.Anchors[3], PowerBarDB.Text.Anchors[4])
-        BCDM.PowerBar.StatusBar.Value:SetFont(BCDM.Media.Font, PowerBarDB.Text.FontSize, BCDM.db.profile.General.FontFlag)
-        BCDM.PowerBar.StatusBar.Value:SetTextColor(FetchPowerTextColour("player"))
-        BCDM.PowerBar.StatusBar.Value:SetShadowColor(BCDM.db.profile.General.Shadows.Colour[1], BCDM.db.profile.General.Shadows.Colour[2], BCDM.db.profile.General.Shadows.Colour[3], BCDM.db.profile.General.Shadows.Colour[4])
-        BCDM.PowerBar.StatusBar.Value:SetShadowOffset(BCDM.db.profile.General.Shadows.OffsetX, BCDM.db.profile.General.Shadows.OffsetY)
-        BCDM:SetPowerBarHeight()
-        BCDM:SetPowerBarWidth()
+    local PowerBar = BCDM.PowerBar
+    if PowerBar then
+        if PowerBarDB.Enabled then
+            PowerBar:ClearAllPoints()
+            PowerBar:SetPoint(PowerBarDB.Layout[1], _G[PowerBarDB.Layout[2]], PowerBarDB.Layout[3], PowerBarDB.Layout[4], PowerBarDB.Layout[5])
+            if PowerBarDB.MatchWidthOfAnchor then
+                local anchorFrame = _G[PowerBarDB.Layout[2]]
+                if anchorFrame then
+                    C_Timer.After(0.1, function() local anchorWidth = anchorFrame:GetWidth() PowerBar:SetWidth(anchorWidth) end)
+                end
+            else
+                PowerBar:SetWidth(PowerBarDB.Width)
+            end
+            PowerBar:SetHeight(PowerBarDB.Height)
+            PowerBar:SetBackdropColor(PowerBarDB.BackgroundColour[1], PowerBarDB.BackgroundColour[2], PowerBarDB.BackgroundColour[3], PowerBarDB.BackgroundColour[4])
+            PowerBar.Status:SetStatusBarTexture(BCDM.Media.Foreground)
+            PowerBar.Text:SetFont(BCDM.Media.Font, PowerBarDB.Text.FontSize, BCDM.db.profile.General.Fonts.FontFlag)
+            PowerBar.Text:SetTextColor(PowerBarDB.Text.Colour[1], PowerBarDB.Text.Colour[2], PowerBarDB.Text.Colour[3], 1)
+            PowerBar.Text:SetPoint(PowerBarDB.Text.Layout[1], PowerBar, PowerBarDB.Text.Layout[2], PowerBarDB.Text.Layout[3], PowerBarDB.Text.Layout[4])
+            if GeneralDB.Fonts.Shadow.Enabled then
+                PowerBar.Text:SetShadowColor(GeneralDB.Fonts.Shadow.Colour[1], GeneralDB.Fonts.Shadow.Colour[2], GeneralDB.Fonts.Shadow.Colour[3], GeneralDB.Fonts.Shadow.Colour[4])
+                PowerBar.Text:SetShadowOffset(GeneralDB.Fonts.Shadow.OffsetX, GeneralDB.Fonts.Shadow.OffsetY)
+            else
+                PowerBar.Text:SetShadowColor(0, 0, 0, 0)
+                PowerBar.Text:SetShadowOffset(0, 0)
+            end
+            PowerBar.Status:SetMinMaxValues(0, UnitPowerMax("player"))
+            PowerBar.Status:SetStatusBarColor(FetchPowerBarColour())
+            PowerBar:RegisterEvent("UNIT_POWER_UPDATE")
+            PowerBar:RegisterEvent("UNIT_MAXPOWER")
+            PowerBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+            PowerBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
+            if PowerBarDB.FrequentUpdates then PowerBar:RegisterEvent("UNIT_POWER_FREQUENT") else PowerBar:UnregisterEvent("UNIT_POWER_FREQUENT") end
+            PowerBar:SetScript("OnEvent", UpdatePowerValues)
+            UpdatePowerValues()
+            if PowerBarDB.Text.Enabled then PowerBar.Text:Show() else PowerBar.Text:Hide() end
+            NudgePowerBar("BCDM_PowerBar", -0.1, 0)
+            PowerBar:Show()
+        else
+            PowerBar:Hide()
+            PowerBar:SetScript("OnEvent", nil)
+            PowerBar:UnregisterAllEvents()
+        end
+    end
+end
+
+function BCDM:UpdatePowerBarWidth()
+    local PowerBarDB = BCDM.db.profile.PowerBar
+    local PowerBar = BCDM.PowerBar
+    if PowerBarDB.Enabled and PowerBarDB.MatchWidthOfAnchor then
+        local anchorFrame = _G[PowerBarDB.Layout[2]]
+        if anchorFrame then
+            C_Timer.After(0.2, function() local anchorWidth = anchorFrame:GetWidth() PowerBar:SetWidth(anchorWidth) end)
+        end
     end
 end

@@ -1,29 +1,27 @@
 local _, BCDM = ...
 
-BCDM.Defaults = {
+local Defaults = {
     global = {
         UseGlobalProfile = false,
-        GlobalProfile = "Default",
-        AutomaticallySetEditMode = false,
-        LayoutNumber = 3,
+        GlobalProfileName = "Default",
     },
     profile = {
         General = {
-            Font = "Friz Quadrata TT",
-            FontFlag = "OUTLINE",
-            IconZoom = 0.1,
-            CooldownText = {
-                FontSize = 15,
-                Colour = {1, 1, 1},
-                Anchors = {"CENTER", "CENTER", 0, 0},
-                ScaleByIconSize = false
+            Fonts = {
+                Font = "Friz Quadrata TT",
+                FontFlag = "OUTLINE",
+                Shadow = {
+                    Enabled = false,
+                    Colour = {0, 0, 0, 1},
+                    OffsetX = 1,
+                    OffsetY = -1
+                }
             },
-            Shadows = {
-                Colour = {0, 0, 0, 1},
-                OffsetX = 0,
-                OffsetY = 0
+            Textures = {
+                Foreground = "Better Blizzard",
+                Background = "Better Blizzard",
             },
-            CustomColours = {
+            Colours = {
                 PrimaryPower = {
                     [0] = {0, 0, 1},                                            -- Mana
                     [1] = {1, 0, 0},                                            -- Rage
@@ -37,7 +35,7 @@ BCDM.Defaults = {
                     [18] = {1, 0.61, 0}                                         -- Pain
                 },
                 SecondaryPower = {
-                    [Enum.PowerType.Chi]           = {0.00, 1.00, 0.59, 1.0 },
+                    [Enum.PowerType.Chi]           = {0.71, 1.00, 0.92, 1.0 },
                     [Enum.PowerType.ComboPoints]   = {1.00, 0.96, 0.41, 1.0 },
                     [Enum.PowerType.HolyPower]     = {0.95, 0.90, 0.60, 1.0 },
                     [Enum.PowerType.ArcaneCharges] = {0.10, 0.10, 0.98, 1.0},
@@ -47,117 +45,271 @@ BCDM.Defaults = {
                     [Enum.PowerType.Maelstrom]     = { 0.25, 0.50, 0.80, 1.0},
                     SOUL                           = { 0.29, 0.42, 1.00, 1.0},
                     STAGGER                        = { 0.00, 1.00, 0.59, 1.0 },
-                    RUNE_RECHARGE                  = { 0.5, 0.5, 0.5, 1.0 }
+                    RUNE_RECHARGE                  = { 0.5, 0.5, 0.5, 1.0 },
+                    ESSENCE_RECHARGE               = { 0.5, 0.5, 0.5, 1.0 }
                 }
             }
         },
-        CastBar = {
-            Height = 24,
-            FGTexture = "Better Blizzard",
-            BGTexture = "Solid",
-            FGColour = {128/255, 128/255, 255/255, 1},
-            BGColour = {20/255, 20/255, 20/255, 1},
-            Anchors = {"TOP", "UtilityCooldownViewer", "BOTTOM", 0, -2},
-            ColourByClass = false,
-            SpellName = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"LEFT", "LEFT", 3, 0},
+        EditModeManager = {
+            SwapOnInstanceDifficulty = false,
+            SwapOnSpecializationChange = false,
+            RaidLayouts = {
+                Normal = "",
+                Heroic = "",
+                Mythic = "",
+                LFR = "",
             },
-            Duration = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"RIGHT", "RIGHT", -3, 0},
-                ExpirationThreshold = 5,
-            }
-        },
-        Essential = {
-            IconSize = {42, 42},
-            Anchors = {"CENTER", "CENTER", 0, -275.1},
-            Count = {
-                FontSize = 15,
-                Colour = {1, 1, 1},
-                Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+            SpecializationLayouts = {
+                [1] = "",
+                [2] = "",
+                [3] = "",
+                [4] = "",
             },
         },
-        Utility = {
-            IconSize = {36, 36},
-            Anchors = {"TOP", "EssentialCooldownViewer", "BOTTOM", 0, -3},
-            Count = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+        CooldownManager = {
+            General = {
+                IconZoom = 0.1,
+                BorderSize = 1,
+                Glow = {
+                    Enabled = true,
+                    GlowType = "PIXEL",
+                    Thickness = 1,
+                    Particles = 10,
+                    Scale = 1,
+                    Colour = {1, 1, 1, 1},
+                    Frequency = 0.25,
+                    XOffset = -1,
+                    YOffset = -1,
+                    Lines = 5,
+                },
+                CooldownText = {
+                    FontSize = 15,
+                    Colour = {1, 1, 1},
+                    Layout = {"CENTER", "CENTER", 0, 0},
+                    ScaleByIconSize = false
+                },
             },
-        },
-        Buffs = {
-            IconSize = {36, 36},
-            Anchors = {"BOTTOM", "BCDM_PowerBar", "TOP", 0, 2},
-            CentreHorizontally = false,
-            Count = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+            Essential = {
+                IconSize = 42,
+                Layout = {"CENTER", "CENTER", 0, -275.1},
+                Text = {
+                    FontSize = 15,
+                    Colour = {1, 1, 1},
+                    Layout = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+                },
             },
-        },
-        Custom = {
-            IconSize = {36, 36},
-            Anchors = {"TOPLEFT", "UtilityCooldownViewer", "BOTTOMLEFT", -1, -2},
-            GrowthDirection = "RIGHT",
-            Spacing = 1,
-            Count = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+            Utility = {
+                IconSize = 36,
+                Layout = {"TOP", "EssentialCooldownViewer", "BOTTOM", 0, -1.1},
+                Text = {
+                    FontSize = 15,
+                    Colour = {1, 1, 1},
+                    Layout = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+                },
             },
-            CustomSpells = {}
-        },
-        AdditionalCustom = {
-            IconSize = {36, 36},
-            Anchors = {"TOPRIGHT", "UtilityCooldownViewer", "BOTTOMRIGHT", 1, -2},
-            GrowthDirection = "LEFT",
-            Spacing = 1,
-            Count = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+            Buffs = {
+                IconSize = 32,
+                CenterBuffs = false,
+                Layout = {"BOTTOM", "BCDM_SecondaryPowerBar", "TOP", 0, 1.1},
+                Text = {
+                    FontSize = 15,
+                    Colour = {1, 1, 1},
+                    Layout = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+                },
             },
-            CustomSpells = {}
-        },
-        Items = {
-            IconSize = {36, 36},
-            Anchors = {"TOP", "UtilityCooldownViewer", "BOTTOM", 0, -2},
-            GrowthDirection = "RIGHT",
-            Spacing = 1,
-            Count = {
-                FontSize = 12,
-                Colour = {1, 1, 1},
-                Anchors = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 3}
+            BuffBar = {
+                Width = 300,
+                Height = 24,
+                Spacing = 5,
+                GrowthDirection = "UP",
+                MatchWidthOfAnchor = true,
+                BackgroundColour = {34/255, 34/255, 34/255, 1},
+                ForegroundColour = {34/255, 34/255, 34/255, 1},
+                Layout = {"BOTTOM", "BCDM_PowerBar", "TOP", 0, 30.1},
+                Text = {
+                    SpellName = {
+                        FontSize = 12,
+                        Colour = {1, 1, 1},
+                        Layout = {"LEFT", "LEFT", 3, 0}
+                    },
+                    Duration = {
+                        FontSize = 12,
+                        Colour = {1, 1, 1},
+                        Layout = {"RIGHT", "RIGHT", -3, 0}
+                    },
+                }
             },
-            CustomItems = {}
+            Custom = {
+                IconSize = 38,
+                Layout = {"TOPLEFT", "UtilityCooldownViewer", "BOTTOMLEFT", 1, -1},
+                Spacing = 1,
+                GrowthDirection = "RIGHT",
+                Text = {
+                    FontSize = 12,
+                    Colour = {1, 1, 1},
+                    Layout = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 2}
+                },
+                Spells = {
+                    -- Monk
+                    ["MONK"] = {
+                        ["BREWMASTER"] = {},
+                        ["WINDWALKER"] = {},
+                        ["MISTWEAVER"] = {},
+                    },
+                    -- Demon Hunter
+                    ["DEMONHUNTER"] = {
+                        ["HAVOC"] = {},
+                        ["VENGEANCE"] = {},
+                        ["DEVOURER"] = {},
+                    },
+                    -- Death Knight
+                    ["DEATHKNIGHT"] = {
+                        ["BLOOD"] = {},
+                        ["UNHOLY"] = {},
+                        ["FROST"] = {}
+                    },
+                    -- Mage
+                    ["MAGE"] = {
+                        ["FROST"] = {},
+                        ["FIRE"] = {},
+                        ["ARCANE"] = {},
+                    },
+                    -- Paladin
+                    ["PALADIN"] = {
+                        ["RETRIBUTION"] = {},
+                        ["HOLY"] = {},
+                        ["PROTECTION"] = {}
+                    },
+                    -- Shaman
+                    ["SHAMAN"] = {
+                        ["ELEMENTAL"] = {},
+                        ["ENHANCEMENT"] = {},
+                        ["RESTORATION"] = {}
+                    },
+                    -- Druid
+                    ["DRUID"] = {
+                        ["GUARDIAN"] = {},
+                        ["FERAL"] = {},
+                        ["RESTORATION"] = {},
+                        ["BALANCE"] = {},
+                    },
+                    -- Evoker
+                    ["EVOKER"] = {
+                        ["DEVASTATION"] = {},
+                        ["AUGMENTATION"] = {},
+                        ["PRESERVATION"] = {}
+                    },
+                    -- Warrior
+                    ["WARRIOR"] = {
+                        ["ARMS"] = {},
+                        ["FURY"] = {},
+                        ["PROTECTION"] = {},
+                    },
+                    -- Priest
+                    ["PRIEST"] = {
+                        ["SHADOW"] = {},
+                        ["DISCIPLINE"] = {},
+                        ["HOLY"] = {},
+                    },
+                    -- Warlock
+                    ["WARLOCK"] = {
+                        ["DESTRUCTION"] = {},
+                        ["AFFLICTION"] = {},
+                        ["DEMONOLOGY"] = {},
+                    },
+                    -- Hunter
+                    ["HUNTER"] = {
+                        ["SURVIVAL"] = {},
+                        ["MARKSMANSHIP"] = {},
+                        ["BEASTMASTERY"] = {},
+                    },
+                    -- Rogue
+                    ["ROGUE"] = {
+                        ["OUTLAW"] = {},
+                        ["ASSASSINATION"] = {},
+                        ["SUBTLETY"] = {},
+                    }
+                },
+            },
+            Item = {
+                IconSize = 38,
+                Layout = {"TOPLEFT", "UtilityCooldownViewer", "BOTTOMRIGHT", -1, -1},
+                Spacing = 1,
+                GrowthDirection = "LEFT",
+                OffsetByParentHeight = true,
+                Text = {
+                    FontSize = 12,
+                    Colour = {1, 1, 1},
+                    Layout = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 2}
+                },
+                Items = {},
+            },
         },
         PowerBar = {
+            Enabled = true,
+            Width = 200,
             Height = 13,
-            FGTexture = "Better Blizzard",
-            BGTexture = "Solid",
-            FGColour = {0/255, 122/255, 204/255, 1},
-            BGColour = {20/255, 20/255, 20/255, 1},
-            Anchors = {"BOTTOM", "EssentialCooldownViewer", "TOP", 0, 2},
-            ColourByPower = true,
+            MatchWidthOfAnchor = true,
+            ColourByType = true,
+            ColourByClass = false,
+            FrequentUpdates = true,
+            BackgroundColour = {34/255, 34/255, 34/255, 1},
+            ForegroundColour = {34/255, 34/255, 34/255, 1},
+            Layout = {"BOTTOM", "EssentialCooldownViewer", "TOP", 0, 1},
             Text = {
+                Enabled = true,
                 FontSize = 18,
                 Colour = {1, 1, 1},
-                Anchors = {"BOTTOM", "BOTTOM", 0, 3},
-                ColourByPower = false
+                Layout = {"BOTTOM", "BOTTOM", 0, 1}
             },
         },
-        SecondaryBar = {
+        SecondaryPowerBar = {
+            Enabled = true,
+            Width = 200,
             Height = 13,
-            FGTexture = "Better Blizzard",
-            BGTexture = "Solid",
-            FGColour = {0/255, 122/255, 204/255, 1},
-            BGColour = {20/255, 20/255, 20/255, 1},
-            Anchors = {"BOTTOM", "EssentialCooldownViewer", "TOP", 0, 2},
-            ColourByPower = true,
-        }
-    }
+            MatchWidthOfAnchor = true,
+            ColourByType = true,
+            ColourByClass = false,
+            BackgroundColour = {34/255, 34/255, 34/255, 1},
+            ForegroundColour = {34/255, 34/255, 34/255, 1},
+            Layout = {"BOTTOM", "BCDM_PowerBar", "TOP", 0, 1},
+            Text = {
+                Enabled = false,
+                FontSize = 12,
+                Colour = {1, 1, 1},
+                Layout = {"CENTER", "CENTER", 0, 0}
+            },
+        },
+        CastBar = {
+            Enabled = true,
+            Width = 200,
+            Height = 24,
+            MatchWidthOfAnchor = true,
+            ColourByClass = true,
+            BackgroundColour = {34/255, 34/255, 34/255, 1},
+            ForegroundColour = {34/255, 34/255, 34/255, 1},
+            Layout = {"TOP", "UtilityCooldownViewer", "BOTTOM", 0, -1},
+            Text = {
+                SpellName = {
+                    FontSize = 12,
+                    Colour = {1, 1, 1},
+                    Layout = {"LEFT", "LEFT", 3, 0},
+                    MaxCharacters = 12,
+                },
+                CastTime = {
+                    FontSize = 12,
+                    Colour = {1, 1, 1},
+                    Layout = {"RIGHT", "RIGHT", -3, 0}
+                }
+            },
+            Icon = {
+                Enabled = true,
+                Layout = "LEFT",
+            }
+        },
+    },
 }
+
+function BCDM:GetDefaultDB()
+    return Defaults
+end
