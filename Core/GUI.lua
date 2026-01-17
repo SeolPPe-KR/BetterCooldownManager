@@ -2491,7 +2491,7 @@ function BCDM:CreateGUI()
     Container:SetWidth(900)
     Container:SetHeight(600)
     Container:EnableResize(false)
-    Container:SetCallback("OnClose", function(widget) AG:Release(widget) BCDM:UpdateBCDM() isGUIOpen = false BCDM.CAST_BAR_TEST_MODE = false BCDM:CreateTestCastBar() BCDM.EssentialCooldownViewerOverlay:Hide() BCDM.UtilityCooldownViewerOverlay:Hide() BCDM.BuffIconCooldownViewerOverlay:Hide() BCDM.CustomCooldownViewerOverlay:Hide() BCDM.CustomItemBarOverlay:Hide() end)
+    Container:SetCallback("OnClose", function(widget) AG:Release(widget) BCDM:UpdateBCDM() isGUIOpen = false BCDM.CAST_BAR_TEST_MODE = false BCDM:CreateTestCastBar() BCDM.EssentialCooldownViewerOverlay:Hide() BCDM.UtilityCooldownViewerOverlay:Hide() BCDM.BuffIconCooldownViewerOverlay:Hide() end)
 
     local function SelectTab(GUIContainer, _, MainTab)
         GUIContainer:ReleaseChildren()
