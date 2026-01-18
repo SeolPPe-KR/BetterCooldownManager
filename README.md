@@ -23,9 +23,9 @@ All of these libraries contribute to the success of BetterCooldownManager & are 
 ## About the Project
 This is a passion project & this has to be maintained as much as possible in order for the longevity of the AddOn. It is solo-developed, but some very kind people from the community have already started contributing.
 
-[Pull Requests](https://github.com/DaleHuntGB/BetterCooldownManger/pulls) are welcome, but I ask that you maintain the structure & layout of my code. Additionally, not all Pull Requests made will be accepted. Anything added is another thing to maintain.
+[Pull Requests](https://github.com/DaleHuntGB/BetterCooldownManager/pulls) are welcome, but I ask that you maintain the structure & layout of my code. Additionally, not all Pull Requests made will be accepted. Anything added is another thing to maintain.
 
-If you find [Issues](https://github.com/DaleHuntGB/BetterCooldownManger/issues), please raise them appropriately and provide as much context as possible. If you have error codes, they help tremendously.
+If you find [Issues](https://github.com/DaleHuntGB/BetterCooldownManager/issues), please raise them appropriately and provide as much context as possible. If you have error codes, they help tremendously.
 
 ## Future Plans
 In the future, skinning the Buff Bars will be available. The code & GUI are all present already but final improvements are still to be made. Along with this, Custom Glows will be added when I find time to implement them appropriately.
