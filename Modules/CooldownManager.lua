@@ -306,7 +306,6 @@ function BCDM:SkinCooldownManager()
     C_Timer.After(1, function() StyleBuffsBars() end)
     SetHooks()
     SetupCenterBuffs()
-    SetGlowType()
     for _, viewerName in ipairs(BCDM.CooldownManagerViewers) do
         C_Timer.After(0.1, function() ApplyCooldownText(viewerName) end)
     end
@@ -346,8 +345,6 @@ function BCDM:UpdateCooldownViewer(viewerType)
     Position()
 
     StyleChargeCount()
-
-    SetGlowType()
 
     ApplyCooldownText(BCDM.DBViewerToCooldownManagerViewer[viewerType])
 
