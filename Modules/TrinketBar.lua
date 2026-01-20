@@ -78,6 +78,7 @@ local function CreateCustomIcon(itemId)
     customIcon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     customIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customIcon:EnableMouse(false)
+    customIcon:SetFrameStrata(CustomDB.FrameStrata or "LOW")
 
     local HighLevelContainer = CreateFrame("Frame", nil, customIcon)
     HighLevelContainer:SetAllPoints(customIcon)
@@ -158,10 +159,10 @@ local function LayoutTrinketBar()
     if not BCDM.TrinketBarContainer then
         BCDM.TrinketBarContainer = CreateFrame("Frame", "BCDM_TrinketBar", UIParent, "BackdropTemplate")
         BCDM.TrinketBarContainer:SetSize(1, 1)
-        BCDM.TrinketBarContainer:SetFrameStrata("LOW")
     end
 
     BCDM.TrinketBarContainer:ClearAllPoints()
+    BCDM.TrinketBarContainer:SetFrameStrata(CustomDB.FrameStrata or "LOW")
     local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
     BCDM.TrinketBarContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
 

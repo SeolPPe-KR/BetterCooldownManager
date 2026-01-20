@@ -72,6 +72,8 @@ local function CreateCustomIcon(spellId)
     customIcon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     customIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customIcon:RegisterEvent("SPELL_UPDATE_CHARGES")
+    customIcon:EnableMouse(false)
+    customIcon:SetFrameStrata(CustomDB.FrameStrata or "LOW")
 
     local HighLevelContainer = CreateFrame("Frame", nil, customIcon)
     HighLevelContainer:SetAllPoints(customIcon)
@@ -173,10 +175,10 @@ local function LayoutAdditionalCustomCooldownViewer()
     if not BCDM.AdditionalCustomCooldownViewerContainer then
         BCDM.AdditionalCustomCooldownViewerContainer = CreateFrame("Frame", "BCDM_AdditionalCustomCooldownViewer", UIParent, "BackdropTemplate")
         BCDM.AdditionalCustomCooldownViewerContainer:SetSize(1, 1)
-        BCDM.AdditionalCustomCooldownViewerContainer:SetFrameStrata("LOW")
     end
 
     BCDM.AdditionalCustomCooldownViewerContainer:ClearAllPoints()
+    BCDM.AdditionalCustomCooldownViewerContainer:SetFrameStrata(CustomDB.FrameStrata or "LOW")
     local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
     BCDM.AdditionalCustomCooldownViewerContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
 

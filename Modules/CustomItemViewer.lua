@@ -81,6 +81,7 @@ local function CreateCustomIcon(itemId)
     customIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customIcon:RegisterEvent("ITEM_COUNT_CHANGED")
     customIcon:EnableMouse(false)
+    customIcon:SetFrameStrata(CustomDB.FrameStrata or "LOW")
 
     local HighLevelContainer = CreateFrame("Frame", nil, customIcon)
     HighLevelContainer:SetAllPoints(customIcon)
@@ -202,10 +203,10 @@ local function LayoutCustomItemBar()
     if not BCDM.CustomItemBarContainer then
         BCDM.CustomItemBarContainer = CreateFrame("Frame", "BCDM_CustomItemBar", UIParent, "BackdropTemplate")
         BCDM.CustomItemBarContainer:SetSize(1, 1)
-        BCDM.CustomItemBarContainer:SetFrameStrata("LOW")
     end
 
     BCDM.CustomItemBarContainer:ClearAllPoints()
+    BCDM.CustomItemBarContainer:SetFrameStrata(CustomDB.FrameStrata or "LOW")
     local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
     BCDM.CustomItemBarContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
 

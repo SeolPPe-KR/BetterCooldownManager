@@ -81,6 +81,7 @@ local function CreateCustomItemIcon(itemId)
     customIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customIcon:RegisterEvent("ITEM_COUNT_CHANGED")
     customIcon:EnableMouse(false)
+    customIcon:SetFrameStrata(CustomDB.FrameStrata or "LOW")
 
     local HighLevelContainer = CreateFrame("Frame", nil, customIcon)
     HighLevelContainer:SetAllPoints(customIcon)
@@ -271,10 +272,10 @@ local function LayoutCustomItemsSpellsBar()
     if not BCDM.CustomItemSpellBarContainer then
         BCDM.CustomItemSpellBarContainer = CreateFrame("Frame", "BCDM_CustomItemSpellBar", UIParent, "BackdropTemplate")
         BCDM.CustomItemSpellBarContainer:SetSize(1, 1)
-        BCDM.CustomItemSpellBarContainer:SetFrameStrata("LOW")
     end
 
     BCDM.CustomItemSpellBarContainer:ClearAllPoints()
+    BCDM.CustomItemSpellBarContainer:SetFrameStrata(CustomDB.FrameStrata or "LOW")
     local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
     BCDM.CustomItemSpellBarContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
     for _, child in ipairs({BCDM.CustomItemSpellBarContainer:GetChildren()}) do child:UnregisterAllEvents() child:Hide() child:SetParent(nil) end

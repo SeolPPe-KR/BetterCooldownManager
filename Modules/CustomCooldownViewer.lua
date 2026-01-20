@@ -172,10 +172,10 @@ local function LayoutCustomCooldownViewer()
     if not BCDM.CustomCooldownViewerContainer then
         BCDM.CustomCooldownViewerContainer = CreateFrame("Frame", "BCDM_CustomCooldownViewer", UIParent, "BackdropTemplate")
         BCDM.CustomCooldownViewerContainer:SetSize(1, 1)
-        BCDM.CustomCooldownViewerContainer:SetFrameStrata("LOW")
     end
 
     BCDM.CustomCooldownViewerContainer:ClearAllPoints()
+    BCDM.CustomCooldownViewerContainer:SetFrameStrata(CustomDB.FrameStrata or "LOW")
     local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
     BCDM.CustomCooldownViewerContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
 
