@@ -1260,7 +1260,7 @@ local function CreateCooldownViewerSettings(parentContainer, viewerType)
     layoutContainer:SetLayout("Flow")
     ScrollFrame:AddChild(layoutContainer)
 
-    if viewerType ~= "Custom" then CreateInformationTag(layoutContainer, "|cFFFFCC00Padding|r is handled by |cFF00B0F7Blizzard|r, not |cFF8080FFBetter|rCooldownManager.") end
+    if viewerType ~= "Custom" and viewerType ~= "AdditionalCustom" and viewerType ~= "Trinket" and viewerType ~= "ItemSpell" and viewerType ~= "Item" then CreateInformationTag(layoutContainer, "|cFFFFCC00Padding|r is handled by |cFF00B0F7Blizzard|r, not |cFF8080FFBetter|rCooldownManager.") end
 
     local anchorFromDropdown = AG:Create("Dropdown")
     anchorFromDropdown:SetLabel("Anchor From")
