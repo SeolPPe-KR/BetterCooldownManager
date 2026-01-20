@@ -258,18 +258,16 @@ local RACIALS = {
     [69041]  = { isActive = true, layoutIndex = 13 }, -- Rocket Barrage
     [256948] = { isActive = true, layoutIndex = 14 }, -- Spatial Rift
     [255647] = { isActive = true, layoutIndex = 15 }, -- Light's Judgment
-    [259930] = { isActive = true, layoutIndex = 16 }, -- Forge of Light
+    [287712] = { isActive = true, layoutIndex = 16 }, -- Haymaker
     [265221] = { isActive = true, layoutIndex = 17 }, -- Fireblood
     [291944] = { isActive = true, layoutIndex = 18 }, -- Regeneratin'
-    [281954] = { isActive = true, layoutIndex = 19 }, -- Pterrordax Swoop
-    [312411] = { isActive = true, layoutIndex = 20 }, -- Bag of Tricks
-    [312370] = { isActive = true, layoutIndex = 21 }, -- Make Camp
-    [312924] = { isActive = true, layoutIndex = 22 }, -- Hyper Organic Light Originator
-    [107079] = { isActive = true, layoutIndex = 23 }, -- Quaking Palm
-    [368970] = { isActive = true, layoutIndex = 24 }, -- Tail Swipe
-    [357214] = { isActive = true, layoutIndex = 25 }, -- Wing Buffet
-    [436344] = { isActive = true, layoutIndex = 26 }, -- Azerite Surge
-    [1237885] = { isActive = true, layoutIndex = 27 }, -- Thorn Bloom
+    [312411] = { isActive = true, layoutIndex = 19 }, -- Bag of Tricks
+    [312924] = { isActive = true, layoutIndex = 20 }, -- Hyper Organic Light Originator
+    [107079] = { isActive = true, layoutIndex = 21 }, -- Quaking Palm
+    [368970] = { isActive = true, layoutIndex = 22 }, -- Tail Swipe
+    [357214] = { isActive = true, layoutIndex = 23 }, -- Wing Buffet
+    [436344] = { isActive = true, layoutIndex = 24 }, -- Azerite Surge
+    [1237885] = { isActive = true, layoutIndex = 25 }, -- Thorn Bloom
 }
 
 function BCDM:AddRecommendedItems()
