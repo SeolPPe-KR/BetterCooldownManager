@@ -75,7 +75,8 @@ local function CreateCustomIcon(itemId)
         customIcon:SetBackdropBorderColor(0, 0, 0, 1)
     end
     customIcon:SetSize(CustomDB.IconSize, CustomDB.IconSize)
-    customIcon:SetPoint(CustomDB.Layout[1], _G[CustomDB.Layout[2]], CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
+    local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
+    customIcon:SetPoint(CustomDB.Layout[1], anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
     customIcon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     customIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customIcon:RegisterEvent("ITEM_COUNT_CHANGED")
@@ -197,7 +198,8 @@ local function LayoutCustomItemBar()
     end
 
     BCDM.CustomItemBarContainer:ClearAllPoints()
-    BCDM.CustomItemBarContainer:SetPoint(containerAnchorFrom, _G[CustomDB.Layout[2]], CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
+    local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
+    BCDM.CustomItemBarContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
 
     for _, child in ipairs({BCDM.CustomItemBarContainer:GetChildren()}) do child:UnregisterAllEvents() child:Hide() child:SetParent(nil) end
 
@@ -290,7 +292,8 @@ function BCDM:UpdateCustomItemBar()
     local CustomDB = CooldownManagerDB.CooldownManager.Item
     if BCDM.CustomItemBarContainer then
         BCDM.CustomItemBarContainer:ClearAllPoints()
-        BCDM.CustomItemBarContainer:SetPoint(CustomDB.Layout[1], _G[CustomDB.Layout[2]], CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
+        local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
+        BCDM.CustomItemBarContainer:SetPoint(CustomDB.Layout[1], anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
     end
     LayoutCustomItemBar()
 end

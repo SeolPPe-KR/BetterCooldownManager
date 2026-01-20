@@ -67,7 +67,8 @@ local function CreateCustomIcon(spellId)
         customIcon:SetBackdropBorderColor(0, 0, 0, 1)
     end
     customIcon:SetSize(CustomDB.IconSize, CustomDB.IconSize)
-    customIcon:SetPoint(CustomDB.Layout[1], _G[CustomDB.Layout[2]], CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
+    local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
+    customIcon:SetPoint(CustomDB.Layout[1], anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
     customIcon:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     customIcon:RegisterEvent("PLAYER_ENTERING_WORLD")
     customIcon:RegisterEvent("SPELL_UPDATE_CHARGES")
@@ -176,7 +177,8 @@ local function LayoutAdditionalCustomCooldownViewer()
     end
 
     BCDM.AdditionalCustomCooldownViewerContainer:ClearAllPoints()
-    BCDM.AdditionalCustomCooldownViewerContainer:SetPoint(containerAnchorFrom, _G[CustomDB.Layout[2]], CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
+    local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
+    BCDM.AdditionalCustomCooldownViewerContainer:SetPoint(containerAnchorFrom, anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
 
     for _, child in ipairs({BCDM.AdditionalCustomCooldownViewerContainer:GetChildren()}) do child:UnregisterAllEvents() child:Hide() child:SetParent(nil) end
 
@@ -269,7 +271,8 @@ function BCDM:UpdateAdditionalCustomCooldownViewer()
     local CustomDB = CooldownManagerDB.CooldownManager.AdditionalCustom
     if BCDM.AdditionalCustomCooldownViewerContainer then
         BCDM.AdditionalCustomCooldownViewerContainer:ClearAllPoints()
-        BCDM.AdditionalCustomCooldownViewerContainer:SetPoint(CustomDB.Layout[1], _G[CustomDB.Layout[2]], CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
+        local anchorParent = CustomDB.Layout[2] == "NONE" and UIParent or _G[CustomDB.Layout[2]]
+        BCDM.AdditionalCustomCooldownViewerContainer:SetPoint(CustomDB.Layout[1], anchorParent, CustomDB.Layout[3], CustomDB.Layout[4], CustomDB.Layout[5])
     end
     LayoutAdditionalCustomCooldownViewer()
 end
