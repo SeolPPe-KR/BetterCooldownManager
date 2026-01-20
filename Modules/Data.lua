@@ -260,7 +260,7 @@ local RACIALS = {
     [69041]  = { isActive = true, layoutIndex = 15 }, -- Rocket Barrage
     [256948] = { isActive = true, layoutIndex = 16 }, -- Spatial Rift
     [255647] = { isActive = true, layoutIndex = 17 }, -- Light's Judgment
-    [255630] = { isActive = true, layoutIndex = 18 }, -- Forge of Light
+    [259930] = { isActive = true, layoutIndex = 18 }, -- Forge of Light
     [265221] = { isActive = true, layoutIndex = 19 }, -- Fireblood
     [265459] = { isActive = true, layoutIndex = 20 }, -- Mole Machine
     [291944] = { isActive = true, layoutIndex = 21 }, -- Regeneratin'
@@ -271,10 +271,9 @@ local RACIALS = {
     [107079] = { isActive = true, layoutIndex = 26 }, -- Quaking Palm
     [369536] = { isActive = true, layoutIndex = 27 }, -- Soar
     [368970] = { isActive = true, layoutIndex = 28 }, -- Tail Swipe
-    [368847] = { isActive = true, layoutIndex = 29 }, -- Wing Buffet
-    [365812] = { isActive = true, layoutIndex = 30 }, -- Glide
-    [436344] = { isActive = true, layoutIndex = 31 }, -- Azerite Surge
-    [443421] = { isActive = true, layoutIndex = 32 }, -- Lash Out
+    [357214] = { isActive = true, layoutIndex = 29 }, -- Wing Buffet
+    [436344] = { isActive = true, layoutIndex = 30 }, -- Azerite Surge
+    [1238623] = { isActive = true, layoutIndex = 31 }, -- Lash Out
 }
 
 function BCDM:AddRecommendedItems()
