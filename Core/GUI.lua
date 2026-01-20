@@ -280,6 +280,35 @@ local function FetchItemSpellInformation(entryId, entryType)
     return FetchItemInformation(entryId) or FetchSpellInformation(entryId)
 end
 
+local function ShowItemTooltip(owner, itemId)
+    if not owner or not itemId then return end
+    GameTooltip:SetOwner(owner, "ANCHOR_CURSOR")
+    GameTooltip:SetItemByID(itemId)
+    GameTooltip:Show()
+end
+
+local function ShowSpellTooltip(owner, spellId)
+    if not owner or not spellId then return end
+    GameTooltip:SetOwner(owner, "ANCHOR_CURSOR")
+    GameTooltip:SetSpellByID(spellId)
+    GameTooltip:Show()
+end
+
+local function ShowItemSpellTooltip(owner, entryId, entryType)
+    if entryType == "spell" then
+        ShowSpellTooltip(owner, entryId)
+        return
+    end
+    if entryType == "item" then
+        ShowItemTooltip(owner, entryId)
+        return
+    end
+    ShowItemTooltip(owner, entryId)
+    if not GameTooltip:IsShown() then
+        ShowSpellTooltip(owner, entryId)
+    end
+end
+
 local function FetchSpellID(spellIdentifier)
     local spellData = C_Spell.GetSpellInfo(spellIdentifier)
     if spellData then
@@ -936,6 +965,8 @@ local function CreateCooldownViewerSpellSettings(parentContainer, customDB, cont
             spellCheckbox:SetLabel("[" .. data.layoutIndex .. "] " .. FetchSpellInformation(spellId))
             spellCheckbox:SetValue(data.isActive)
             spellCheckbox:SetCallback("OnValueChanged", function(_, _, value) SpellDB[playerClass][playerSpecialization][spellId].isActive = value BCDM:UpdateCooldownViewer("Custom") end)
+            spellCheckbox:SetCallback("OnEnter", function(widget) ShowSpellTooltip(widget.frame, spellId) end)
+            spellCheckbox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
             spellCheckbox:SetRelativeWidth(0.6)
             parentContainer:AddChild(spellCheckbox)
 
@@ -1014,6 +1045,8 @@ local function CreateCooldownViewerItemSettings(parentContainer, containerToRefr
             itemCheckbox:SetLabel("[" .. data.layoutIndex .. "] " .. FetchItemInformation(itemId))
             itemCheckbox:SetValue(data.isActive)
             itemCheckbox:SetCallback("OnValueChanged", function(_, _, value) ItemDB[itemId].isActive = value BCDM:UpdateCooldownViewer("Item") end)
+            itemCheckbox:SetCallback("OnEnter", function(widget) ShowItemTooltip(widget.frame, itemId) end)
+            itemCheckbox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
             itemCheckbox:SetRelativeWidth(0.6)
             parentContainer:AddChild(itemCheckbox)
 
@@ -1098,6 +1131,8 @@ local function CreateCooldownViewerItemSpellSettings(parentContainer, containerT
             itemCheckbox:SetLabel("[" .. data.layoutIndex .. "] " .. (FetchItemSpellInformation(itemId, data.entryType) or "Unknown"))
             itemCheckbox:SetValue(data.isActive)
             itemCheckbox:SetCallback("OnValueChanged", function(_, _, value) ItemSpellDB[itemId].isActive = value BCDM:UpdateCooldownViewer("ItemSpell") end)
+            itemCheckbox:SetCallback("OnEnter", function(widget) ShowItemSpellTooltip(widget.frame, itemId, data.entryType) end)
+            itemCheckbox:SetCallback("OnLeave", function() GameTooltip:Hide() end)
             itemCheckbox:SetRelativeWidth(0.6)
             parentContainer:AddChild(itemCheckbox)
 
