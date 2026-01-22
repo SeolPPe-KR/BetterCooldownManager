@@ -4,7 +4,7 @@ local LEMO = LibStub("LibEditModeOverride-1.0")
 local function ShouldSkin()
     if not BCDM.db.profile.CooldownManager.Enable then return false end
     if C_AddOns.IsAddOnLoaded("ElvUI") then return false end
-    if C_AddOns.IsAddOnLoaded("Masque") then return false end
+    if C_AddOns.IsAddOnLoaded("MasqueBlizzBars") then return false end
     return true
 end
 
