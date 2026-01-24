@@ -6,5 +6,15 @@ function BCDM:SetupEventManager()
     BCDMEventManager:RegisterEvent("PLAYER_ENTERING_WORLD")
     BCDMEventManager:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
     BCDMEventManager:RegisterEvent("TRAIT_CONFIG_UPDATED")
-    BCDMEventManager:SetScript("OnEvent", function() C_Timer.After(0.5, function() BCDM:UpdateBCDM() LEMO:ApplyChanges() end) end)
+    BCDMEventManager:SetScript("OnEvent", function(_, event, ...)
+        if event == "PLAYER_SPECIALIZATION_CHANGED" then
+            local unit = ...
+            if unit ~= "player" then return end
+            BCDM:UpdateBCDM()
+            LEMO:ApplyChanges()
+        else
+            BCDM:UpdateBCDM()
+            LEMO:ApplyChanges()
+        end
+    end)
 end
