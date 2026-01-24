@@ -415,6 +415,7 @@ local Defaults = {
             Enabled = true,
             Width = 200,
             Height = 13,
+            HeightWithoutPrimary = 13,
             MatchWidthOfAnchor = true,
             ColourByType = true,
             ColourByClass = false,
