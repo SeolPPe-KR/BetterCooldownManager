@@ -351,7 +351,7 @@ trinketCheckEvent:RegisterEvent("PLAYER_ENTERING_WORLD")
 trinketCheckEvent:SetScript("OnEvent", function(self, event, slot)
     if InCombatLockdown() then return end
     if event == "PLAYER_LOGIN" or event == "PLAYER_ENTERING_WORLD" then
-        BCDM:FetchEquippedTrinkets()
+        C_Timer.After(1, function() BCDM:FetchEquippedTrinkets() end)
         return
     elseif event == "PLAYER_EQUIPMENT_CHANGED" and (slot == 13 or slot == 14) then
         BCDM:FetchEquippedTrinkets()
