@@ -7,6 +7,7 @@ function BCDM:SetupEventManager()
     BCDMEventManager:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
     BCDMEventManager:RegisterEvent("TRAIT_CONFIG_UPDATED")
     BCDMEventManager:SetScript("OnEvent", function(_, event, ...)
+        if InCombatLockdown() then return end
         if event == "PLAYER_SPECIALIZATION_CHANGED" then
             local unit = ...
             if unit ~= "player" then return end
