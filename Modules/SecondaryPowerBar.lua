@@ -45,6 +45,7 @@ local function DetectSecondaryPower()
         if specID == 1480 then return "SOUL" end
     elseif class == "SHAMAN" then
         if specID == 263 then return Enum.PowerType.Maelstrom end
+        if specID == 262 then return "MANA" end
     elseif class == "PRIEST" then
         if specID == 258 then return "MANA" end
     end
