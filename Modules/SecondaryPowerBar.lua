@@ -22,7 +22,6 @@ local function DetectSecondaryPower()
     local spec = C_SpecializationInfo.GetSpecialization()
     local specID = C_SpecializationInfo.GetSpecializationInfo(spec)
     local secondaryPowerBarDB = BCDM.db and BCDM.db.profile and BCDM.db.profile.SecondaryPowerBar
-    local showMana = secondaryPowerBarDB and (secondaryPowerBarDB.ShowMana or secondaryPowerBarDB.ShowManaBar)
     isDestruction = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization()) == 267
 
     if class == "MONK" then
@@ -47,9 +46,6 @@ local function DetectSecondaryPower()
         if specID == 1480 then return "SOUL" end
     elseif class == "SHAMAN" then
         if specID == 263 then return Enum.PowerType.Maelstrom end
-        if specID == 262 and showMana then return "MANA" end
-    elseif class == "PRIEST" then
-        if specID == 258 and showMana then return "MANA" end
     end
 
     return nil
