@@ -186,20 +186,6 @@ end
 --     StyleBuffsBars()
 -- end
 
---[[
-local cooldownFrameTbl = {}
-
-for _, child in ipairs({ viewer:GetChildren() }) do
-    cooldownFrameTbl[child:GetCooldownFrame()] = true
-end
-
-hooksecurefunc("CooldownFrame_Set", function(cooldownFrame)
-    if cooldownFrameTbl[cooldownFrame] and cooldownFrame:GetUseAuraDisplayTime() then
-        CooldownFrame_Clear(cooldownFrame)
-    end
-end)
-]]
-
 local function StyleIcons()
     if not ShouldSkin() then return end
     local cooldownManagerSettings = BCDM.db.profile.CooldownManager
@@ -280,7 +266,7 @@ local function StyleChargeCount()
     end
 end
 
-local centerBuffsUpdateThrottle = 0.05
+local centerBuffsUpdateThrottle = 0.01
 local nextcenterBuffsUpdate = 0
 
 local function CenterBuffs()
@@ -313,7 +299,6 @@ local function CenterBuffs()
     return visibleCount
 end
 
-
 local centerBuffsEventFrame = CreateFrame("Frame")
 
 local function SetupCenterBuffs()
@@ -326,9 +311,6 @@ local function SetupCenterBuffs()
         centerBuffsEventFrame:Hide()
     end
 end
-
-local centerWrappedUpdateThrottle = 0.05
-local nextCenterWrappedUpdate = 0
 
 local function CenterWrappedRows(viewerName)
     local viewer = _G[viewerName]
@@ -384,36 +366,12 @@ local function CenterWrappedRows(viewerName)
 end
 
 local function CenterWrappedIcons()
-    local currentTime = GetTime()
-    if currentTime < nextCenterWrappedUpdate then return end
-    nextCenterWrappedUpdate = currentTime + centerWrappedUpdateThrottle
-
     local cooldownManagerSettings = BCDM.db.profile.CooldownManager
     local essentialSettings = cooldownManagerSettings.Essential
     local utilitySettings = cooldownManagerSettings.Utility
 
-    if essentialSettings and essentialSettings.CenterHorizontally then
-        CenterWrappedRows("EssentialCooldownViewer")
-    end
-
-    if utilitySettings and utilitySettings.CenterHorizontally then
-        CenterWrappedRows("UtilityCooldownViewer")
-    end
-end
-
-local centerWrappedEventFrame = CreateFrame("Frame")
-
-local function SetupCenterHorizontalIcons()
-    local cooldownManagerSettings = BCDM.db.profile.CooldownManager
-    local enableEssential = cooldownManagerSettings.Essential.CenterHorizontally
-    local enableUtility = cooldownManagerSettings.Utility.CenterHorizontally
-
-    if enableEssential or enableUtility then
-        centerWrappedEventFrame:SetScript("OnUpdate", CenterWrappedIcons)
-    else
-        centerWrappedEventFrame:SetScript("OnUpdate", nil)
-        centerWrappedEventFrame:Hide()
-    end
+    if essentialSettings and essentialSettings.CenterHorizontally then CenterWrappedRows("EssentialCooldownViewer") end
+    if utilitySettings and utilitySettings.CenterHorizontally then CenterWrappedRows("UtilityCooldownViewer") end
 end
 
 function BCDM:SkinCooldownManager()
@@ -425,7 +383,8 @@ function BCDM:SkinCooldownManager()
     Position()
     SetHooks()
     SetupCenterBuffs()
-    SetupCenterHorizontalIcons()
+    if EssentialCooldownViewer and EssentialCooldownViewer.RefreshLayout then hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function() CenterWrappedIcons() end) end
+    if UtilityCooldownViewer and UtilityCooldownViewer.RefreshLayout then hooksecurefunc(UtilityCooldownViewer, "RefreshLayout", function() CenterWrappedIcons() end) end
     for _, viewerName in ipairs(BCDM.CooldownManagerViewers) do
         C_Timer.After(0.1, function() ApplyCooldownText(viewerName) end)
     end
@@ -449,8 +408,6 @@ function BCDM:UpdateCooldownViewer(viewerType)
     if viewerType == "Trinket" then BCDM:UpdateTrinketBar() return end
     if viewerType == "ItemSpell" then BCDM:UpdateCustomItemsSpellsBar() return end
     if viewerType == "Buffs" then SetupCenterBuffs() end
-    if viewerType == "Essential" or viewerType == "Utility" then SetupCenterHorizontalIcons() end
-
 
     for _, childFrame in ipairs({cooldownViewerFrame:GetChildren()}) do
         if childFrame then

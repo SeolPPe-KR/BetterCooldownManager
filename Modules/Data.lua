@@ -379,3 +379,39 @@ function BCDM:FetchEquippedTrinkets()
 
     BCDM:UpdateCooldownViewer("Trinket")
 end
+
+function BCDM:AddRacials(customDB)
+    local CooldownManager = BCDM.db.profile.CooldownManager
+    if not CooldownManager or not CooldownManager[customDB] then return end
+
+    local CustomDB = CooldownManager[customDB]
+    if not CustomDB.Spells then return end
+
+    for classToken, specs in pairs(CustomDB.Spells) do
+        for specToken, spells in pairs(specs) do
+            for spellId, data in pairs(RACIALS) do
+                if not spells[spellId] then
+                    spells[spellId] = data
+                end
+            end
+        end
+    end
+end
+
+function BCDM:RemoveRacials(customDB)
+    local CooldownManager = BCDM.db.profile.CooldownManager
+    if not CooldownManager or not CooldownManager[customDB] then return end
+
+    local CustomDB = CooldownManager[customDB]
+    if not CustomDB.Spells then return end
+
+    for classToken, specs in pairs(CustomDB.Spells) do
+        for specToken, spells in pairs(specs) do
+            for spellId, data in pairs(RACIALS) do
+                if spells[spellId] then
+                    spells[spellId] = nil
+                end
+            end
+        end
+    end
+end
