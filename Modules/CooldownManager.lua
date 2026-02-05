@@ -25,6 +25,33 @@ local function FetchCooldownTextRegion(cooldown)
 end
 
 local buffBarResizeTimer
+local buffBarPulseTicker
+
+local function StartBuffBarPulse()
+    if buffBarPulseTicker then return end
+    buffBarPulseTicker = C_Timer.NewTicker(0.03, function()
+        local viewer = _G["BuffBarCooldownViewer"]
+        if not viewer or not viewer:IsShown() then return end
+        BCDM:UpdateBuffBarStyle()
+    end)
+end
+
+local function StopBuffBarPulse()
+    if buffBarPulseTicker then
+        buffBarPulseTicker:Cancel()
+        buffBarPulseTicker = nil
+    end
+end
+
+local function UpdateBuffBarPulseState()
+    local viewer = _G["BuffBarCooldownViewer"]
+    if not viewer then return end
+    if viewer:IsShown() then
+        StartBuffBarPulse()
+    else
+        StopBuffBarPulse()
+    end
+end
 
 local function FetchBuffBarColour()
     local CooldownManagerDB = BCDM.db.profile
@@ -190,6 +217,12 @@ local function StyleBuffsBars()
     local buffBarViewer = _G["BuffBarCooldownViewer"]
     if not buffBarViewer then return end
 
+    if not buffBarViewer.BCDMBuffBarPulseHooked then
+        buffBarViewer:HookScript("OnShow", UpdateBuffBarPulseState)
+        buffBarViewer:HookScript("OnHide", UpdateBuffBarPulseState)
+        buffBarViewer.BCDMBuffBarPulseHooked = true
+    end
+
     buffBarViewer.growthDirection = BuffBarDB.GrowthDirection
     buffBarViewer.childYPadding = BuffBarDB.Spacing
 
@@ -304,6 +337,7 @@ local function StyleBuffsBars()
     end
 
     LayoutBuffBarRows()
+    UpdateBuffBarPulseState()
 end
 
 local function Position()
