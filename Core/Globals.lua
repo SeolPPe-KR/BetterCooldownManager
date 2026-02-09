@@ -583,3 +583,16 @@ BCDM.AnchorParents = {
         { "EssentialCooldownViewer", "UtilityCooldownViewer", "BCDM_PowerBar", "BCDM_SecondaryPowerBar" },
     }
 }
+
+StaticPopupDialogs["BCDM_RELOAD"] = {
+    text = "You must |cFFFF4040reload|r in order for changes to take effect. Do you want to reload now?",
+    button1 = "Reload",
+    button2 = "Cancel",
+    OnAccept = function() ReloadUI() end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+}
+function BCDM:PromptReload()
+    StaticPopup_Show("BCDM_RELOAD")
+end

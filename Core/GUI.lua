@@ -2606,7 +2606,7 @@ local function CreateCastBarSettings(parentContainer)
     local enabledCheckbox = AG:Create("CheckBox")
     enabledCheckbox:SetLabel("Enable Cast Bar")
     enabledCheckbox:SetValue(BCDM.db.profile.CastBar.Enabled)
-    enabledCheckbox:SetCallback("OnValueChanged", function(self, _, value) BCDM.db.profile.CastBar.Enabled = value BCDM:UpdateCastBar() RefreshCastBarGUISettings() end)
+    enabledCheckbox:SetCallback("OnValueChanged", function(self, _, value) BCDM.db.profile.CastBar.Enabled = value BCDM:PromptReload() end)
     enabledCheckbox:SetRelativeWidth(0.33)
     toggleContainer:AddChild(enabledCheckbox)
 
