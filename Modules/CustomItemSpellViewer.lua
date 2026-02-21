@@ -129,7 +129,7 @@ local function CreateCustomItemIcon(itemId)
                     customIcon.Icon:SetDesaturated(false)
                     customIcon.Charges:SetText(tostring(itemCount))
                 end
-                if not C_Item.IsUsableItem(itemId) then customIcon.Icon:SetVertexColor(0.3, 0.3, 0.3) else customIcon.Icon:SetVertexColor(1, 1, 1) end
+                if not C_Item.IsUsableItem(itemId) then customIcon.Icon:SetVertexColor(0.5, 0.5, 0.5) else customIcon.Icon:SetVertexColor(1, 1, 1) end
                 customIcon.Charges:SetAlphaFromBoolean(itemCount > 1, 1, 0)
             end
         end
